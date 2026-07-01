@@ -305,6 +305,11 @@
   .ticket.dept-rentals { border-left-color: var(--steel-blue); }
   .ticket.dept-sales { border-left-color: var(--clay); }
 
+  /* clickable tickets open the work order */
+  a.ticket { color: inherit; text-decoration: none; transition: transform 0.08s ease, box-shadow 0.08s ease; }
+  a.ticket:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(31,38,35,0.12); border-color: var(--slate-light); }
+  a.ticket:hover .ticket-title { color: var(--amber-deep); }
+
   /* perforation notch */
   .ticket::before, .ticket::after {
     content: "";
@@ -592,38 +597,38 @@
             <div class="section-link">View all 7 bays →</div>
           </div>
           <div class="ticket-list">
-            <div class="ticket dept-service">
+            <a class="ticket dept-service" href="work-order.html?wo=88213">
               <div class="ticket-main">
                 <div class="ticket-id">WO-88213 · Bay 2</div>
                 <div class="ticket-title">John Deere 8R 250 — hydraulic leak, PTO inspection</div>
                 <div class="ticket-meta"><span>Tech: R. Alvarez</span><span>In 3 days</span></div>
               </div>
               <div class="stamp progress">In Progress</div>
-            </div>
-            <div class="ticket dept-service">
+            </a>
+            <a class="ticket dept-service" href="work-order.html?wo=88190">
               <div class="ticket-main">
                 <div class="ticket-id">WO-88190 · Bay 4</div>
                 <div class="ticket-title">Case IH Magnum 340 — 500-hr scheduled service</div>
                 <div class="ticket-meta"><span>Tech: J. Okafor</span><span>In 6 days</span></div>
               </div>
               <div class="stamp waiting">Waiting on Parts</div>
-            </div>
-            <div class="ticket dept-service">
+            </a>
+            <a class="ticket dept-service" href="work-order.html?wo=88175">
               <div class="ticket-main">
                 <div class="ticket-id">WO-88175 · Bay 1</div>
                 <div class="ticket-title">Toro Groundsmaster 4000 — deck belt replacement</div>
                 <div class="ticket-meta"><span>Tech: M. Lindqvist</span><span>In 1 day</span></div>
               </div>
               <div class="stamp ready">Ready for Pickup</div>
-            </div>
-            <div class="ticket dept-service">
+            </a>
+            <a class="ticket dept-service" href="work-order.html?wo=88142">
               <div class="ticket-main">
                 <div class="ticket-id">WO-88142 · Unassigned</div>
                 <div class="ticket-title">Kubota M7-172 — warranty claim, engine diagnostics</div>
                 <div class="ticket-meta"><span>Filed 5 days ago</span><span>Overdue</span></div>
               </div>
               <div class="stamp overdue">Overdue</div>
-            </div>
+            </a>
           </div>
         </div>
 

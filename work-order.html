@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldbook — Work Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal: #1F2623;
+    --charcoal-2: #29322D;
+    --charcoal-3: #333D36;
+    --paper: #F6F3EC;
+    --paper-2: #EFEAE0;
+    --paper-line: #DDD6C4;
+    --amber: #E2932F;
+    --amber-deep: #B9701A;
+    --field-green: #3F6B4F;
+    --field-green-deep: #2C4E38;
+    --clay: #B4502E;
+    --clay-deep: #8C3B20;
+    --steel-blue: #4A6C7A;
+    --steel-blue-deep: #35505C;
+    --ink: #211D17;
+    --slate: #6F6A5D;
+    --slate-light: #A29C8B;
+    --cream-text: #F2EFE6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .headline-font { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  a { color: inherit; text-decoration: none; }
+
+  .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+  /* ===== SIDEBAR (shared) ===== */
+  .sidebar { background: var(--charcoal); color: var(--cream-text); padding: 20px 0; display: flex; flex-direction: column; }
+  .brand { padding: 0 20px 24px; border-bottom: 1px solid rgba(242,239,230,0.1); margin-bottom: 18px; }
+  .brand-mark { display: flex; align-items: center; gap: 9px; }
+  .brand-name { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .brand-sub { font-size: 10.5px; color: var(--slate-light); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 3px; }
+  .nav-group-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-light); padding: 0 20px; margin: 16px 0 6px; }
+  .nav-item { display: flex; align-items: center; gap: 11px; padding: 9px 20px; color: var(--cream-text); font-size: 13.5px; font-weight: 500; border-left: 3px solid transparent; cursor: pointer; }
+  .nav-item .count { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: rgba(242,239,230,0.08); padding: 1px 6px; border-radius: 2px; color: var(--slate-light); }
+  .nav-item.active { background: var(--charcoal-2); border-left-color: var(--amber); }
+  .nav-item.active .count { background: var(--amber); color: var(--charcoal); font-weight: 600; }
+  .nav-item:hover:not(.active) { background: rgba(242,239,230,0.05); }
+  .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+  .sidebar-footer { margin-top: auto; padding: 14px 20px 0; border-top: 1px solid rgba(242,239,230,0.1); }
+  .location-pill { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--slate-light); }
+  .location-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--field-green); box-shadow: 0 0 0 2px rgba(63,107,79,0.25); flex-shrink: 0; }
+
+  .main { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ===== TOPBAR / BREADCRUMB ===== */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 28px; border-bottom: 1px solid var(--paper-line); }
+  .crumb { font-size: 12.5px; color: var(--slate); display: flex; align-items: center; gap: 8px; }
+  .crumb a:hover { color: var(--ink); }
+  .crumb .sep { color: var(--paper-line); }
+  .crumb .here { color: var(--ink); font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 30px; height: 30px; border-radius: 3px; background: var(--steel-blue); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; }
+  .btn { font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: 2px; cursor: pointer; border: 1px solid var(--paper-line); background: white; color: var(--ink); letter-spacing: 0.02em; }
+  .btn.primary { background: var(--charcoal); color: var(--cream-text); border-color: var(--charcoal); }
+
+  .content { padding: 22px 28px 60px; flex: 1; }
+
+  /* ===== WO HEADER SLAB ===== */
+  .wo-head { background: var(--charcoal); color: var(--cream-text); border-radius: 3px; padding: 20px 24px; display: flex; justify-content: space-between; gap: 24px; position: relative; overflow: hidden; margin-bottom: 6px; }
+  .wo-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
+  .wo-head.dept-overdue::before { background: var(--clay); }
+  .wo-head-l { min-width: 0; }
+  .wo-id-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .wo-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); letter-spacing: 0.04em; }
+  .wo-bay { font-size: 11px; color: var(--slate-light); font-family: 'IBM Plex Mono', monospace; }
+  .wo-title { font-family: 'Oswald', sans-serif; font-size: 25px; font-weight: 600; line-height: 1.1; letter-spacing: 0.01em; }
+  .wo-sub { font-size: 12.5px; color: var(--slate-light); margin-top: 7px; display: flex; flex-wrap: wrap; gap: 18px; }
+  .wo-sub b { color: var(--cream-text); font-weight: 500; }
+  .wo-head-r { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
+
+  .stamp { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; border: 2px solid currentColor; border-radius: 4px; transform: rotate(-3deg); white-space: nowrap; }
+  .stamp.progress { color: var(--amber); }
+  .stamp.ready { color: #7FB893; }
+  .stamp.waiting { color: #D98A63; }
+  .stamp.overdue { color: #E08663; background: rgba(224,134,99,0.1); }
+  .wo-priority { font-size: 11px; color: var(--slate-light); text-align: right; }
+  .wo-priority b { color: var(--cream-text); }
+  .wo-priority b.warn { color: #E08663; }
+
+  /* ===== LIFECYCLE STEPPER ===== */
+  .lifecycle { background: white; border: 1px solid var(--paper-line); border-radius: 3px; padding: 20px 24px 18px; margin-bottom: 20px; }
+  .lifecycle-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
+  .lifecycle-head .section-title { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .lifecycle-head .elapsed { font-size: 12px; color: var(--slate); }
+  .lifecycle-head .elapsed b { font-family: 'IBM Plex Mono', monospace; color: var(--ink); }
+
+  .stepper { display: flex; position: relative; }
+  .step { flex: 1; position: relative; text-align: center; padding-top: 26px; }
+  .step::before { content: ""; position: absolute; top: 8px; left: -50%; width: 100%; height: 3px; background: var(--paper-line); z-index: 0; }
+  .step:first-child::before { display: none; }
+  .step .node { position: absolute; top: 2px; left: 50%; transform: translateX(-50%); width: 15px; height: 15px; border-radius: 50%; background: var(--paper); border: 3px solid var(--paper-line); z-index: 1; }
+  .step.done::before { background: var(--field-green); }
+  .step.done .node { background: var(--field-green); border-color: var(--field-green); }
+  .step.current::before { background: var(--field-green); }
+  .step.current .node { background: var(--amber); border-color: var(--amber-deep); box-shadow: 0 0 0 4px rgba(226,147,47,0.2); }
+  .step.overdue::before { background: var(--field-green); }
+  .step.overdue .node { background: var(--clay); border-color: var(--clay-deep); box-shadow: 0 0 0 4px rgba(180,80,46,0.2); }
+  .step-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--slate); }
+  .step.done .step-name { color: var(--ink); }
+  .step.current .step-name { color: var(--amber-deep); }
+  .step.overdue .step-name { color: var(--clay-deep); }
+  .step-time { font-size: 10px; color: var(--slate-light); margin-top: 3px; font-family: 'IBM Plex Mono', monospace; }
+
+  /* ===== TWO-COL BODY ===== */
+  .wo-body { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+  .card { background: white; border: 1px solid var(--paper-line); border-radius: 3px; margin-bottom: 20px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--paper-2); }
+  .card-title { font-family: 'Oswald', sans-serif; font-size: 13.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .card-title .swatch { width: 9px; height: 9px; border-radius: 50%; }
+  .card-meta { font-size: 11.5px; color: var(--slate); }
+
+  /* 3 C's */
+  .threec { display: flex; gap: 0; border-bottom: 1px solid var(--paper-2); }
+  .threec:last-child { border-bottom: none; }
+  .threec-label { width: 96px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); padding: 14px 0 14px 18px; }
+  .threec-label.complaint { border-left: 3px solid var(--clay); }
+  .threec-label.cause { border-left: 3px solid var(--amber); }
+  .threec-label.correction { border-left: 3px solid var(--field-green); }
+  .threec-text { padding: 14px 18px 14px 14px; font-size: 13px; }
+  .threec-text .muted { color: var(--slate-light); font-style: italic; }
+
+  /* line tables */
+  .ltable { width: 100%; border-collapse: collapse; }
+  .ltable th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); font-weight: 600; text-align: left; padding: 9px 18px; border-bottom: 1px solid var(--paper-2); }
+  .ltable th.num, .ltable td.num { text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  .ltable td { padding: 12px 18px; border-bottom: 1px solid var(--paper-2); font-size: 13px; vertical-align: top; }
+  .ltable tr:last-child td { border-bottom: none; }
+  .ltable .code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--slate); }
+  .ltable .op-name { font-weight: 500; }
+  .ltable .sub { font-size: 11px; color: var(--slate); margin-top: 2px; }
+  .ltable .empty { color: var(--slate-light); font-style: italic; text-align: center; }
+
+  .tag { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; border: 1px solid currentColor; }
+  .tag.done { color: var(--field-green-deep); }
+  .tag.active { color: var(--amber-deep); background: rgba(226,147,47,0.08); }
+  .tag.hold { color: var(--clay-deep); background: rgba(180,80,46,0.06); }
+  .tag.warranty { color: var(--steel-blue-deep); border-style: dashed; }
+  .tag.backorder { color: var(--amber-deep); }
+
+  /* right rail */
+  .side-card { background: white; border: 1px solid var(--paper-line); border-radius: 3px; margin-bottom: 18px; }
+  .side-head { padding: 11px 16px; border-bottom: 1px solid var(--paper-2); font-family: 'Oswald', sans-serif; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* cost summary */
+  .cost-body { padding: 6px 16px 12px; }
+  .cost-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--paper-2); }
+  .cost-row .lbl { color: var(--slate); }
+  .cost-row .val { font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .cost-split { display: flex; gap: 8px; padding: 12px 0 4px; }
+  .cost-chip { flex: 1; border: 1px solid var(--paper-line); border-radius: 2px; padding: 9px 10px; }
+  .cost-chip.warranty { border-color: var(--steel-blue); background: rgba(74,108,122,0.05); }
+  .cost-chip.customer { border-color: var(--amber-deep); background: rgba(226,147,47,0.06); }
+  .cost-chip .clbl { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--slate); }
+  .cost-chip .cval { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; margin-top: 2px; }
+  .cost-total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; margin-top: 4px; border-top: 2px solid var(--ink); }
+  .cost-total .lbl { font-family: 'Oswald', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cost-total .val { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; }
+  .cost-note { font-size: 11px; color: var(--slate); font-style: italic; margin-top: 8px; }
+
+  /* authorization */
+  .auth-body { padding: 14px 16px; }
+  .auth-state { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .auth-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .auth-dot.ok { background: var(--field-green); }
+  .auth-dot.hold { background: var(--clay); }
+  .auth-note { font-size: 11.5px; color: var(--slate); }
+  .auth-sig { margin-top: 12px; border: 1px dashed var(--paper-line); border-radius: 3px; padding: 10px 12px; background: var(--paper-2); }
+  .auth-sig .sig-name { font-family: 'Oswald', sans-serif; font-size: 20px; font-style: italic; color: var(--charcoal-2); transform: rotate(-1.5deg); }
+  .auth-sig .sig-meta { font-size: 10.5px; color: var(--slate-light); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+  /* warranty panel */
+  .warr-body { padding: 14px 16px; }
+  .warr-line { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; }
+  .warr-line .k { color: var(--slate); }
+  .warr-line .v { font-family: 'IBM Plex Mono', monospace; }
+  .warr-status { margin-top: 10px; padding: 10px 12px; border-radius: 3px; background: rgba(74,108,122,0.08); border-left: 3px solid var(--steel-blue); font-size: 12px; }
+  .warr-status b { color: var(--steel-blue-deep); }
+  .warr-status.flagged { background: rgba(180,80,46,0.08); border-left-color: var(--clay); }
+  .warr-status.flagged b { color: var(--clay-deep); }
+
+  /* meta list */
+  .meta-body { padding: 6px 16px 12px; }
+  .meta-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; font-size: 12.5px; border-bottom: 1px solid var(--paper-2); }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-row .k { color: var(--slate); flex-shrink: 0; }
+  .meta-row .v { text-align: right; font-weight: 500; }
+  .meta-row .v.warn { color: var(--clay-deep); }
+  .meta-row .v .mono { font-family: 'IBM Plex Mono', monospace; font-weight: 400; font-size: 11.5px; }
+
+  /* activity */
+  .activity { padding: 6px 18px 14px; }
+  .act-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--paper-2); }
+  .act-row:last-child { border-bottom: none; }
+  .act-rail { display: flex; flex-direction: column; align-items: center; }
+  .act-node { width: 9px; height: 9px; border-radius: 50%; background: var(--slate-light); margin-top: 4px; }
+  .act-node.warranty { background: var(--steel-blue); }
+  .act-node.parts { background: var(--field-green); }
+  .act-node.labor { background: var(--amber); }
+  .act-text { font-size: 12.5px; }
+  .act-text b { font-weight: 600; }
+  .act-time { font-size: 10.5px; color: var(--slate-light); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+
+  @media (max-width: 1040px) { .wo-body { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stepper { flex-wrap: wrap; gap: 14px; }
+    .step { flex: 0 0 33%; }
+    .step::before { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="10" width="20" height="10" rx="1" fill="#E2932F"/>
+          <rect x="4" y="12" width="6" height="4" fill="#1F2623"/>
+          <circle cx="7" cy="21" r="2.3" fill="#1F2623" stroke="#F2EFE6" stroke-width="1"/>
+          <circle cx="18" cy="21" r="2.3" fill="#1F2623" stroke="#F2EFE6" stroke-width="1"/>
+          <rect x="16" y="7" width="5" height="6" rx="0.5" fill="#E2932F"/>
+        </svg>
+        <div><div class="brand-name">Fieldbook</div></div>
+      </div>
+      <div class="brand-sub">Dealer Operations</div>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-item" href="index.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-group-label">Departments</div>
+    <div class="nav-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M2 4h3l2.4 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></svg>
+      Sales <span class="count">18</span>
+    </div>
+    <div class="nav-item active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Service <span class="count">7</span>
+    </div>
+    <div class="nav-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.9 7.5-9 4.7a2 2 0 0 0-2 0l-8.9 5a2 2 0 0 0-1 1.7v9.6a2 2 0 0 0 1 1.7l8.9 5a2 2 0 0 0 2 0l8.9-5a2 2 0 0 0 1-1.7v-9.6a2 2 0 0 0-1-1.7Z" transform="translate(1 0)"/><path d="M2.6 9.7 12 15l9.4-5.3M12 22V15"/></svg>
+      Parts <span class="count">6</span>
+    </div>
+    <div class="nav-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="16" height="12" rx="1"/><path d="M17 10h3.5a1 1 0 0 1 .9.55L23 14v4h-6"/><circle cx="6" cy="18.5" r="1.7"/><circle cx="18.5" cy="18.5" r="1.7"/></svg>
+      Rentals <span class="count">4</span>
+    </div>
+
+    <div class="nav-group-label">Insights</div>
+    <div class="nav-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-3.4-3.4L3 17"/></svg>
+      Reporting
+    </div>
+    <a class="nav-item" href="manufacturers.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Manufacturers
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="location-pill"><span class="dot"></span>Prairie Line Equipment — Fargo, ND</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb">
+        <a href="index.html">Dashboard</a>
+        <span class="sep">/</span>
+        <a href="index.html">Service Bay</a>
+        <span class="sep">/</span>
+        <span class="here" id="crumb-here">WO-88213</span>
+      </div>
+      <div class="topbar-right">
+        <a class="btn" id="bay-link" href="bay.html">Open bay view →</a>
+        <div class="btn primary">Actions ▾</div>
+        <div class="avatar">DC</div>
+      </div>
+    </div>
+
+    <div class="content" id="content"><!-- rendered by JS --></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Work order records — keyed by ID. The detail screen is one
+   template; ?wo=<id> selects which record to render. Continuity
+   with the dashboard tickets (index.html) and the manufacturer
+   feed is intentional (see WO-88142 / Kubota serial flag).
+   ============================================================ */
+const RECORDS = {
+  "88213": {
+    dept: "service",
+    bay: "BAY 2 · CUSTOMER-PAY + WARRANTY",
+    title: "John Deere 8R 250 — Hydraulic Leak &amp; PTO Inspection",
+    sub: [["Unit", "Hendricks Farm #4"], ["PIN", "1RW8R250_JD012947", true], ["Customer", "Hendricks Family Farms"], ["Opened", "Jun 28"]],
+    stamp: { cls: "progress", label: "In Progress" },
+    priority: `Promised: <b>Jul 3, 5:00 PM</b><br>2 days remaining`,
+    elapsed: `Age <b>3d 4h</b> · Labor logged <b>6.5h</b> of 9.0h est.`,
+    steps: [
+      { name: "Checked In", time: "Jun 28 · 9:12a", state: "done" },
+      { name: "Diagnosis", time: "Jun 28 · 2:40p", state: "done" },
+      { name: "Estimate", time: "Jun 29 · 8:05a", state: "done" },
+      { name: "Authorized", time: "Jun 29 · 11:20a", state: "done" },
+      { name: "Labor", time: "In progress", state: "current" },
+      { name: "Quality Check", time: "—", state: "" },
+      { name: "Invoiced", time: "—", state: "" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Operator reports steady hydraulic fluid loss and slow 3-point hitch response under load. Requests PTO driveline inspected while in the shop.",
+      cause: "Failed SCV coupler O-ring and weeping return-line fitting at the rear valve block. PTO shield worn but serviceable — driveline splines within spec.",
+      correction: `<span class="muted">In progress — </span>Replace SCV coupler seal kit and return-line fitting, refill/bleed hydraulic system, replace worn PTO shield. Road-test under load before QC.`
+    },
+    laborTech: "Tech: R. Alvarez · Bay 2",
+    labor: [
+      { op: "Hydraulic diagnosis &amp; pressure test", code: "OP-HYD-DIAG · Straight time", est: "1.5h", actual: "1.5h", tag: ["done", "Complete"], amount: "$187.50" },
+      { op: "SCV coupler seal &amp; return-line R&amp;R", code: "OP-HYD-SCV · Flat rate 3.2h", est: "3.2h", actual: "3.0h", tag: ["active", "In progress"], amount: "$400.00" },
+      { op: "System bleed &amp; road test under load", code: "OP-HYD-BLEED · Straight time", est: "1.5h", actual: "2.0h", tag: ["active", "In progress"], amount: "$250.00" },
+      { op: "PTO shield R&amp;R (warranty)", code: "OP-PTO-SHLD · JD warranty op 8R-4471", est: "0.8h", actual: "—", tag: ["warranty", "Warranty"], amount: "$100.00" }
+    ],
+    partsMeta: "4 lines · 1 backordered",
+    parts: [
+      { num: "RE-52341", desc: "Hydraulic filter kit", qty: "1", tag: ["done", "Picked"], ext: "$84.20" },
+      { num: "AL-118842", desc: "SCV coupler seal kit", qty: "1", tag: ["done", "Picked"], ext: "$46.75" },
+      { num: "R-234119", desc: "Return-line fitting, 1/2\" JIC", qty: "2", tag: ["done", "Picked"], ext: "$31.40" },
+      { num: "JD-77410", desc: "PTO shield assembly (warranty)", qty: "1", tag: ["backorder", "Backordered · ETA Thu"], ext: "$0.00" }
+    ],
+    activity: [
+      { node: "labor", text: "<b>R. Alvarez</b> clocked onto SCV seal R&amp;R", time: "Today · 10:42 AM" },
+      { node: "warranty", text: "<b>Warranty</b> — JD claim WC-2291 pre-authorized for PTO shield op 8R-4471", time: "Today · 9:15 AM" },
+      { node: "parts", text: "<b>Parts</b> — JD-77410 placed on backorder, ETA Thursday (blocks warranty op)", time: "Yesterday · 3:48 PM" },
+      { node: "", text: "<b>D. Castellano</b> authorized estimate — customer approved by phone", time: "Jun 29 · 11:20 AM" },
+      { node: "", text: "<b>R. Alvarez</b> completed diagnosis, added cause &amp; correction", time: "Jun 28 · 2:40 PM" }
+    ],
+    cost: {
+      rows: [["Labor (6.5h billed)", "$837.50"], ["Parts", "$162.35"], ["Shop supplies", "$28.00"], ["Est. tax", "$74.60"]],
+      customer: "$1,002.45", warranty: "$100.00", total: "$1,102.45"
+    },
+    auth: {
+      dot: "ok", state: "Authorized up to $1,150",
+      note: "Approved by phone; e-signature captured at check-in. Re-authorization required if estimate exceeds cap by more than 10%.",
+      sigName: "M. Hendricks", sigMeta: "Jun 29 · 11:20 AM · verbal + SMS confirm"
+    },
+    warranty: {
+      lines: [["OEM", "John Deere"], ["Claim #", "WC-2291"], ["Coverage", "Powertrain 8R"], ["Op code", "8R-4471"]],
+      status: `<b>Pre-authorized.</b> Submission held until PTO shield (JD-77410) is fitted and labor closed. Claim cannot be filed against an open op.`
+    },
+    meta: [["Model", "John Deere 8R 250"], ["PIN", `<span class="mono">1RW8R250_JD012947</span>`], ["Engine hrs", `<span class="mono">1,284 h</span>`], ["Customer", "Hendricks Family Farms"], ["Contact", "Marcus Hendricks"], ["Acct terms", "Net 30 · In good standing"]]
+  },
+
+  "88190": {
+    dept: "service",
+    bay: "BAY 4 · CUSTOMER-PAY",
+    title: "Case IH Magnum 340 — 500-Hour Scheduled Service",
+    sub: [["Unit", "Red River #2"], ["PIN", "ZFRE05512", true], ["Customer", "Red River Grain Co."], ["Opened", "Jun 27"]],
+    stamp: { cls: "waiting", label: "Waiting on Parts" },
+    priority: `Promised: <b>Jul 4, 12:00 PM</b><br><b class="warn">Blocked — waiting on parts</b>`,
+    elapsed: `Age <b>4d 2h</b> · Labor logged <b>4.5h</b> of 6.0h est.`,
+    steps: [
+      { name: "Checked In", time: "Jun 27 · 8:30a", state: "done" },
+      { name: "Inspection", time: "Jun 27 · 1:15p", state: "done" },
+      { name: "Estimate", time: "Jun 27 · 4:40p", state: "done" },
+      { name: "Authorized", time: "Jun 28 · 9:05a", state: "done" },
+      { name: "Labor", time: "Held on parts", state: "current" },
+      { name: "Quality Check", time: "—", state: "" },
+      { name: "Invoiced", time: "—", state: "" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "500-hour scheduled maintenance interval due. Customer wants full service completed before harvest season.",
+      cause: "Routine interval. Inspection also found the hydraulic pump drive coupler worn beyond spec — recommended replacement while the pump is accessible.",
+      correction: `<span class="muted">In progress — </span>Complete 500-hr service (oils, filters, inspections) and replace hydraulic pump drive coupler. Held pending backordered coupler (ETA Jul 3).`
+    },
+    laborTech: "Tech: J. Okafor · Bay 4",
+    labor: [
+      { op: "500-hour scheduled service", code: "OP-500HR · Flat rate 4.0h", est: "4.0h", actual: "4.0h", tag: ["done", "Complete"], amount: "$500.00" },
+      { op: "Hydraulic pump drive coupler R&amp;R", code: "OP-HYD-CPLR · Flat rate 1.5h", est: "1.5h", actual: "0.5h", tag: ["hold", "Held — parts"], amount: "$62.50" }
+    ],
+    partsMeta: "4 lines · 1 backordered",
+    parts: [
+      { num: "CI-77120", desc: "Engine oil filter", qty: "1", tag: ["done", "Picked"], ext: "$28.50" },
+      { num: "CI-77250", desc: "Fuel filter, set of 2", qty: "1", tag: ["done", "Picked"], ext: "$64.90" },
+      { num: "CI-90040", desc: "Hydraulic oil, 20 gal", qty: "1", tag: ["done", "Picked"], ext: "$210.00" },
+      { num: "CI-88231", desc: "Hydraulic pump drive coupler", qty: "1", tag: ["backorder", "Backordered · ETA Jul 3"], ext: "$45.50" }
+    ],
+    activity: [
+      { node: "parts", text: "<b>Parts</b> — CI-88231 pump coupler backordered, ETA Jul 3 (blocks completion)", time: "Yesterday · 2:10 PM" },
+      { node: "", text: "<b>D. Castellano</b> authorized 500-hr service + coupler replacement", time: "Jun 28 · 9:05 AM" },
+      { node: "labor", text: "<b>J. Okafor</b> began 500-hr service checklist", time: "Jun 27 · 1:40 PM" },
+      { node: "", text: "Unit checked in at 512 engine hours", time: "Jun 27 · 8:30 AM" }
+    ],
+    cost: {
+      rows: [["Labor (4.5h billed)", "$562.50"], ["Parts", "$348.90"], ["Shop supplies", "$22.00"], ["Est. tax", "$56.20"]],
+      customer: "$989.60", warranty: "$0.00", total: "$989.60"
+    },
+    auth: {
+      dot: "ok", state: "Authorized up to $1,100",
+      note: "Approved by phone at check-in; coupler replacement approved as an added line. Re-auth required beyond the 10% cap.",
+      sigName: "R. Voss", sigMeta: "Jun 28 · 9:05 AM · verbal + SMS confirm"
+    },
+    warranty: null,
+    meta: [["Model", "Case IH Magnum 340"], ["PIN", `<span class="mono">ZFRE05512</span>`], ["Engine hrs", `<span class="mono">512 h</span>`], ["Customer", "Red River Grain Co."], ["Contact", "Roland Voss"], ["Acct terms", "Net 30 · In good standing"]]
+  },
+
+  "88175": {
+    dept: "service",
+    bay: "BAY 1 · CUSTOMER-PAY",
+    title: "Toro Groundsmaster 4000-D — Deck Belt Replacement",
+    sub: [["Unit", "Meadowlark #7"], ["Serial", "40657-31204", true], ["Customer", "Meadowlark Golf Club"], ["Opened", "Jun 30"]],
+    stamp: { cls: "ready", label: "Ready for Pickup" },
+    priority: `<b>Completed Jun 30</b><br>Awaiting customer pickup`,
+    elapsed: `Age <b>1d 6h</b> · Labor logged <b>2.0h</b> of 2.0h est.`,
+    steps: [
+      { name: "Checked In", time: "Jun 30 · 7:50a", state: "done" },
+      { name: "Diagnosis", time: "Jun 30 · 8:30a", state: "done" },
+      { name: "Estimate", time: "Jun 30 · 9:10a", state: "done" },
+      { name: "Authorized", time: "Jun 30 · 9:40a", state: "done" },
+      { name: "Labor", time: "Jun 30 · 2:15p", state: "done" },
+      { name: "Quality Check", time: "Jun 30 · 3:00p", state: "done" },
+      { name: "Invoiced", time: "Ready", state: "current" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Mower deck belt squealing and slipping; uneven cut height reported by the grounds crew.",
+      cause: "Deck drive belt glazed and stretched past the tension range; idler pulley bearing dry and notchy.",
+      correction: "Replaced 60\" deck drive belt and idler pulley, re-tensioned, balanced blades, and verified even cut height on a test strip. Ready for pickup."
+    },
+    laborTech: "Tech: M. Lindqvist · Bay 1",
+    labor: [
+      { op: "Deck belt &amp; idler pulley R&amp;R", code: "OP-MOW-BELT · Flat rate 1.5h", est: "1.5h", actual: "1.5h", tag: ["done", "Complete"], amount: "$187.50" },
+      { op: "Blade balance &amp; test cut", code: "OP-MOW-TEST · Straight time", est: "0.5h", actual: "0.5h", tag: ["done", "Complete"], amount: "$62.50" }
+    ],
+    partsMeta: "2 lines · all in stock",
+    parts: [
+      { num: "TR-140-9600", desc: "Deck belt, 60\"", qty: "1", tag: ["done", "Installed"], ext: "$96.80" },
+      { num: "TR-110-6892", desc: "Idler pulley assembly", qty: "1", tag: ["done", "Installed"], ext: "$49.50" }
+    ],
+    activity: [
+      { node: "", text: "<b>Invoice INV-33108</b> generated — ready for customer pickup", time: "Jun 30 · 3:05 PM" },
+      { node: "labor", text: "<b>QC passed</b> — verified even cut height on test strip", time: "Jun 30 · 3:00 PM" },
+      { node: "labor", text: "<b>M. Lindqvist</b> completed deck belt &amp; idler R&amp;R", time: "Jun 30 · 2:15 PM" },
+      { node: "", text: "<b>D. Castellano</b> authorized estimate — customer approved in person", time: "Jun 30 · 9:40 AM" }
+    ],
+    cost: {
+      rows: [["Labor (2.0h)", "$250.00"], ["Parts", "$146.30"], ["Shop supplies", "$12.00"], ["Est. tax", "$30.55"]],
+      customer: "$438.85", warranty: "$0.00", total: "$438.85"
+    },
+    auth: {
+      dot: "ok", state: "Authorized · work complete",
+      note: "Approved in person at drop-off. Invoice generated and ready for pickup.",
+      sigName: "P. Nowak", sigMeta: "Jun 30 · 9:40 AM · signed in shop"
+    },
+    warranty: null,
+    meta: [["Model", "Toro Groundsmaster 4000-D"], ["Serial", `<span class="mono">40657-31204</span>`], ["Engine hrs", `<span class="mono">3,140 h</span>`], ["Customer", "Meadowlark Golf Club"], ["Contact", "Petra Nowak"], ["Acct terms", "Net 15 · In good standing"]]
+  },
+
+  "88142": {
+    dept: "overdue",
+    bay: "UNASSIGNED · WARRANTY",
+    title: "Kubota M7-172 — Warranty Claim, Engine Diagnostics",
+    sub: [["Unit", "Thorson #1"], ["PIN", "⚠ unverified", true], ["Customer", "Thorson Dairy LLC"], ["Opened", "Jun 26"]],
+    stamp: { cls: "overdue", label: "Overdue" },
+    priority: `<b class="warn">Overdue — 5 days open</b><br>Needs technician assignment`,
+    elapsed: `Age <b>5d 1h</b> · Labor logged <b>0.0h</b> — not started`,
+    steps: [
+      { name: "Checked In", time: "Jun 26 · 10:05a", state: "done" },
+      { name: "Diagnosis", time: "Stalled · unassigned", state: "overdue" },
+      { name: "Estimate", time: "—", state: "" },
+      { name: "Authorized", time: "—", state: "" },
+      { name: "Labor", time: "—", state: "" },
+      { name: "Quality Check", time: "—", state: "" },
+      { name: "Invoiced", time: "—", state: "" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Intermittent engine derate and DPF regeneration faults; loss of power under load, reported over the last two weeks.",
+      cause: `<span class="muted">Pending — </span>Awaiting technician assignment and Kubota fault-code guidance. Warranty claim currently blocked on unit serial verification.`,
+      correction: `<span class="muted">Not started.</span>`
+    },
+    laborTech: "Tech: Unassigned",
+    labor: [
+      { op: "Engine derate &amp; DPF diagnosis (warranty)", code: "OP-ENG-DIAG · Kubota warranty", est: "2.0h", actual: "—", tag: ["hold", "Not started"], amount: "$250.00" }
+    ],
+    partsMeta: "0 lines · pending diagnosis",
+    parts: [],
+    activity: [
+      { node: "warranty", text: "<b>Kubota</b> — claim WC-2288 flagged, missing/invalid unit serial #", time: "Yesterday · 4:12 PM" },
+      { node: "", text: "<b>Escalated</b> — 5 days open, still unassigned", time: "Yesterday · 8:00 AM" },
+      { node: "warranty", text: "<b>Warranty</b> claim WC-2288 opened for engine derate", time: "Jun 26 · 11:20 AM" },
+      { node: "", text: "Unit checked in — customer reports intermittent power loss", time: "Jun 26 · 10:05 AM" }
+    ],
+    cost: {
+      rows: [["Labor (est 2.0h)", "$250.00"], ["Parts", "$0.00"], ["Est. tax", "$0.00"]],
+      customer: "$0.00", warranty: "$250.00", total: "$250.00",
+      note: "Estimated. Billed to warranty — no customer charge. Claim on hold pending serial verification."
+    },
+    auth: {
+      dot: "hold", state: "Warranty — no customer charge",
+      note: "Customer authorization not required; work billed to Kubota under warranty. Claim approval pending a valid unit serial.",
+      sigName: null
+    },
+    warranty: {
+      flagged: true,
+      lines: [["OEM", "Kubota"], ["Claim #", "WC-2288"], ["Coverage", "Powertrain M7"], ["Op code", "pending"]],
+      status: `<b>Flagged — rejected.</b> Kubota returned the claim: the submitted unit serial does not match a warrantable PIN. Verify the serial on the frame plate and resubmit; the op cannot proceed until the unit is identified.`
+    },
+    meta: [["Model", "Kubota M7-172"], ["PIN", `<span class="warn">⚠ Serial unverified</span>`, "warn"], ["Engine hrs", `<span class="mono">892 h</span>`], ["Customer", "Thorson Dairy LLC"], ["Contact", "Erik Thorson"], ["Acct terms", "Net 30 · In good standing"]]
+  }
+};
+
+/* ---------- render helpers ---------- */
+function subHTML(sub) {
+  return sub.map(([k, v, mono]) => `<span>${k}: <b${mono ? ' class="mono"' : ''}>${v}</b></span>`).join("");
+}
+function stepsHTML(steps) {
+  return steps.map(s => `<div class="step ${s.state}"><span class="node"></span><div class="step-name">${s.name}</div><div class="step-time">${s.time}</div></div>`).join("");
+}
+function laborHTML(labor) {
+  return labor.map(l => `<tr>
+    <td><div class="op-name">${l.op}</div><div class="sub code">${l.code}</div></td>
+    <td class="num">${l.est}</td><td class="num">${l.actual}</td>
+    <td><span class="tag ${l.tag[0]}">${l.tag[1]}</span></td>
+    <td class="num">${l.amount}</td></tr>`).join("");
+}
+function partsHTML(parts) {
+  if (!parts.length) return `<tr><td colspan="5" class="empty">No parts added — pending diagnosis.</td></tr>`;
+  return parts.map(p => `<tr>
+    <td class="code">${p.num}</td><td>${p.desc}</td><td class="num">${p.qty}</td>
+    <td><span class="tag ${p.tag[0]}">${p.tag[1]}</span></td>
+    <td class="num">${p.ext}</td></tr>`).join("");
+}
+function activityHTML(rows) {
+  return rows.map(a => `<div class="act-row">
+    <div class="act-rail"><span class="act-node ${a.node}"></span></div>
+    <div><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div></div>`).join("");
+}
+function costChipsHTML(c) {
+  if (c.warranty && c.warranty !== "$0.00") {
+    return `<div class="cost-chip customer"><div class="clbl">Customer Pay</div><div class="cval">${c.customer}</div></div>
+      <div class="cost-chip warranty"><div class="clbl">Warranty</div><div class="cval">${c.warranty}</div></div>`;
+  }
+  return `<div class="cost-chip customer" style="flex:1"><div class="clbl">Customer Pay</div><div class="cval">${c.customer}</div></div>`;
+}
+function metaHTML(meta) {
+  return meta.map(([k, v, warn]) => `<div class="meta-row"><span class="k">${k}</span><span class="v${warn ? ' ' + warn : ''}">${v}</span></div>`).join("");
+}
+function authHTML(a) {
+  if (!a) return "";
+  const sig = a.sigName ? `<div class="auth-sig"><div class="sig-name">${a.sigName}</div><div class="sig-meta">${a.sigMeta}</div></div>` : "";
+  return `<div class="side-card"><div class="side-head">Customer Authorization</div>
+    <div class="auth-body">
+      <div class="auth-state"><span class="auth-dot ${a.dot}"></span>${a.state}</div>
+      <div class="auth-note">${a.note}</div>${sig}
+    </div></div>`;
+}
+function warrantyHTML(w) {
+  if (!w) return "";
+  const lines = w.lines.map(([k, v]) => `<div class="warr-line"><span class="k">${k}</span><span class="v">${v}</span></div>`).join("");
+  return `<div class="side-card"><div class="side-head">Warranty Claim</div>
+    <div class="warr-body">${lines}
+      <div class="warr-status${w.flagged ? ' flagged' : ''}">${w.status}</div>
+    </div></div>`;
+}
+
+function render(rec) {
+  const c = rec.cost;
+  document.getElementById("content").innerHTML = `
+    <div class="wo-head ${rec.dept === 'overdue' ? 'dept-overdue' : ''}">
+      <div class="wo-head-l">
+        <div class="wo-id-row"><span class="wo-id">${rec.id}</span><span class="wo-bay">${rec.bay}</span></div>
+        <div class="wo-title">${rec.title}</div>
+        <div class="wo-sub">${subHTML(rec.sub)}</div>
+      </div>
+      <div class="wo-head-r">
+        <div class="stamp ${rec.stamp.cls}">${rec.stamp.label}</div>
+        <div class="wo-priority">${rec.priority}</div>
+      </div>
+    </div>
+
+    <div class="lifecycle">
+      <div class="lifecycle-head"><div class="section-title">Work Order Lifecycle</div><div class="elapsed">${rec.elapsed}</div></div>
+      <div class="stepper">${stepsHTML(rec.steps)}</div>
+    </div>
+
+    <div class="wo-body">
+      <div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--amber)"></span>Complaint · Cause · Correction</div></div>
+          <div>
+            <div class="threec"><div class="threec-label complaint">Complaint</div><div class="threec-text">${rec.threeC.complaint}</div></div>
+            <div class="threec"><div class="threec-label cause">Cause</div><div class="threec-text">${rec.threeC.cause}</div></div>
+            <div class="threec"><div class="threec-label correction">Correction</div><div class="threec-text">${rec.threeC.correction}</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--amber)"></span>Labor Operations</div><div class="card-meta">${rec.laborTech}</div></div>
+          <table class="ltable">
+            <thead><tr><th>Op / Flat-Rate</th><th class="num">Est</th><th class="num">Actual</th><th>Status</th><th class="num">Amount</th></tr></thead>
+            <tbody>${laborHTML(rec.labor)}</tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--field-green)"></span>Parts</div><div class="card-meta">${rec.partsMeta}</div></div>
+          <table class="ltable">
+            <thead><tr><th>Part #</th><th>Description</th><th class="num">Qty</th><th>Status</th><th class="num">Ext.</th></tr></thead>
+            <tbody>${partsHTML(rec.parts)}</tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--charcoal-3)"></span>Activity Log</div></div>
+          <div class="activity">${activityHTML(rec.activity)}</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-card">
+          <div class="side-head">Cost Summary</div>
+          <div class="cost-body">
+            ${c.rows.map(([l, v]) => `<div class="cost-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join("")}
+            <div class="cost-split">${costChipsHTML(c)}</div>
+            <div class="cost-total"><span class="lbl">${rec.dept === 'overdue' ? 'Est. Total' : 'Est. Total'}</span><span class="val">${c.total}</span></div>
+            ${c.note ? `<div class="cost-note">${c.note}</div>` : ""}
+          </div>
+        </div>
+        ${authHTML(rec.auth)}
+        ${warrantyHTML(rec.warranty)}
+        <div class="side-card">
+          <div class="side-head">Unit &amp; Customer</div>
+          <div class="meta-body">${metaHTML(rec.meta)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---------- boot ---------- */
+(function () {
+  const params = new URLSearchParams(location.search);
+  const id = params.get("wo") || "88213";
+  const rec = RECORDS[id] || RECORDS["88213"];
+  rec.id = "WO-" + (RECORDS[id] ? id : "88213");
+  render(rec);
+  document.title = "Fieldbook — " + rec.id;
+  document.getElementById("crumb-here").textContent = rec.id;
+  document.getElementById("bay-link").href = "bay.html?wo=" + (RECORDS[id] ? id : "88213");
+})();
+</script>
+</body>
+</html>
