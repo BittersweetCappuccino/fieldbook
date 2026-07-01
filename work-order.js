@@ -222,6 +222,160 @@ const RECORDS = {
       status: `<b>Flagged — rejected.</b> Kubota returned the claim: the submitted unit serial does not match a warrantable PIN. Verify the serial on the frame plate and resubmit; the op cannot proceed until the unit is identified.`
     },
     meta: [["Model", "Kubota M7-172"], ["PIN", `<span class="warn">⚠ Serial unverified</span>`, "warn"], ["Engine hrs", `<span class="mono">892 h</span>`], ["Customer", "Thorson Dairy LLC"], ["Contact", "Erik Thorson"], ["Acct terms", "Net 30 · In good standing"]]
+  },
+
+  "88221": {
+    dept: "service",
+    bay: "BAY 3 · CUSTOMER-PAY",
+    title: "New Holland T6.180 — No-Start, Electrical Diagnosis",
+    sub: [["Unit", "Coteau Dairy #2"], ["PIN", "HCA6180_NH04471", true], ["Customer", "Coteau Dairy Co-op"], ["Opened", "Jun 30"]],
+    stamp: { cls: "progress", label: "In Progress" },
+    priority: `Promised: <b>Jul 2, 3:00 PM</b><br>1 day remaining`,
+    elapsed: `Age <b>1d 6h</b> · Labor logged <b>2.0h</b> of 3.0h est.`,
+    steps: [
+      { name: "Checked In", time: "Jun 30 · 3:30p", state: "done" },
+      { name: "Diagnosis", time: "Jul 1 · 8:40a", state: "done" },
+      { name: "Estimate", time: "Jul 1 · 9:10a", state: "done" },
+      { name: "Authorized", time: "Jul 1 · 9:35a", state: "done" },
+      { name: "Labor", time: "In progress", state: "current" },
+      { name: "Quality Check", time: "—", state: "" },
+      { name: "Invoiced", time: "—", state: "" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Intermittent no-start; dash warning lights flicker while cranking. Worse in the morning.",
+      cause: "Corroded main ground strap and a failing starter relay. Harness checked and ruled out.",
+      correction: `<span class="muted">In progress — </span>Replace ground strap and starter relay, load-test the charging system, and verify a reliable cold start.`
+    },
+    laborTech: "Tech: T. Nguyen · Bay 3",
+    labor: [
+      { op: "Electrical no-start diagnosis", code: "OP-ELE-DIAG · Straight time", est: "1.5h", actual: "2.0h", tag: ["active", "In progress"], amount: "$250.00" },
+      { op: "Ground strap &amp; starter relay R&amp;R", code: "OP-ELE-RLY · Flat rate 1.0h", est: "1.0h", actual: "—", tag: ["active", "In progress"], amount: "$125.00" }
+    ],
+    partsMeta: "2 lines · all in stock",
+    parts: [
+      { num: "NH-44120", desc: "Starter relay", qty: "1", tag: ["done", "Picked"], ext: "$62.40" },
+      { num: "NH-33887", desc: "Ground strap kit", qty: "1", tag: ["done", "Picked"], ext: "$18.90" }
+    ],
+    activity: [
+      { node: "labor", text: "<b>T. Nguyen</b> clocked onto electrical diagnosis", time: "Today · 9:20 AM" },
+      { node: "", text: "<b>D. Castellano</b> authorized diagnosis + repair", time: "Jul 1 · 9:35 AM" },
+      { node: "", text: "Unit checked in — customer reports intermittent no-start", time: "Jun 30 · 3:30 PM" }
+    ],
+    cost: {
+      rows: [["Labor (2.0h billed)", "$250.00"], ["Parts", "$81.30"], ["Shop supplies", "$12.00"], ["Est. tax", "$20.65"]],
+      customer: "$363.95", warranty: "$0.00", total: "$363.95"
+    },
+    auth: {
+      dot: "ok", state: "Authorized up to $500",
+      note: "Approved by phone at check-in. Re-auth required beyond the 10% cap.",
+      sigName: "L. Coteau", sigMeta: "Jul 1 · 9:35 AM · verbal + SMS confirm"
+    },
+    warranty: null,
+    meta: [["Model", "New Holland T6.180"], ["PIN", `<span class="mono">HCA6180_NH04471</span>`], ["Engine hrs", `<span class="mono">2,410 h</span>`], ["Customer", "Coteau Dairy Co-op"], ["Contact", "Lucille Coteau"], ["Acct terms", "Net 30 · In good standing"]]
+  },
+
+  "88205": {
+    dept: "service",
+    bay: "BAY 5 · CUSTOMER-PAY",
+    title: "Bobcat S650 — Hydraulic Quick-Attach Repair",
+    sub: [["Unit", "Sundquist #6"], ["Serial", "AHGM11342", true], ["Customer", "Sundquist Excavating"], ["Opened", "Jun 29"]],
+    stamp: { cls: "ready", label: "Ready for Pickup" },
+    priority: `<b>Completed Jun 30</b><br>Awaiting customer pickup`,
+    elapsed: `Age <b>1d 8h</b> · Labor logged <b>2.5h</b> of 2.5h est.`,
+    steps: [
+      { name: "Checked In", time: "Jun 29 · 8:10a", state: "done" },
+      { name: "Diagnosis", time: "Jun 29 · 9:20a", state: "done" },
+      { name: "Estimate", time: "Jun 29 · 9:55a", state: "done" },
+      { name: "Authorized", time: "Jun 29 · 10:15a", state: "done" },
+      { name: "Labor", time: "Jun 30 · 2:40p", state: "done" },
+      { name: "Quality Check", time: "Jun 30 · 3:55p", state: "done" },
+      { name: "Invoiced", time: "Ready", state: "current" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Hydraulic quick-attach not locking; attachments releasing under load — flagged as a safety concern.",
+      cause: "Failed quick-attach cylinder seals and a cracked lock-pin bushing.",
+      correction: "Rebuilt the quick-attach cylinder, replaced the lock-pin bushing, and tested lock/unlock under load — verified secure. Ready for pickup."
+    },
+    laborTech: "Tech: D. Berg · Bay 5",
+    labor: [
+      { op: "Quick-attach cylinder rebuild", code: "OP-HYD-QA · Flat rate 2.0h", est: "2.0h", actual: "2.0h", tag: ["done", "Complete"], amount: "$250.00" },
+      { op: "Function test under load", code: "OP-HYD-TEST · Straight time", est: "0.5h", actual: "0.5h", tag: ["done", "Complete"], amount: "$62.50" }
+    ],
+    partsMeta: "2 lines · all in stock",
+    parts: [
+      { num: "BC-77231", desc: "Quick-attach seal kit", qty: "1", tag: ["done", "Installed"], ext: "$58.60" },
+      { num: "BC-40119", desc: "Lock-pin bushing", qty: "1", tag: ["done", "Installed"], ext: "$22.30" }
+    ],
+    activity: [
+      { node: "", text: "<b>Invoice INV-33121</b> generated — ready for pickup", time: "Jun 30 · 4:10 PM" },
+      { node: "labor", text: "<b>QC passed</b> — verified lock under load", time: "Jun 30 · 3:55 PM" },
+      { node: "labor", text: "<b>D. Berg</b> completed cylinder rebuild", time: "Jun 30 · 2:40 PM" },
+      { node: "", text: "<b>D. Castellano</b> authorized repair — approved in person", time: "Jun 29 · 10:15 AM" }
+    ],
+    cost: {
+      rows: [["Labor (2.5h)", "$312.50"], ["Parts", "$80.90"], ["Shop supplies", "$14.00"], ["Est. tax", "$24.35"]],
+      customer: "$431.75", warranty: "$0.00", total: "$431.75"
+    },
+    auth: {
+      dot: "ok", state: "Authorized · work complete",
+      note: "Approved in person at drop-off. Invoice generated and ready for pickup.",
+      sigName: "K. Sundquist", sigMeta: "Jun 29 · 10:15 AM · signed in shop"
+    },
+    warranty: null,
+    meta: [["Model", "Bobcat S650"], ["Serial", `<span class="mono">AHGM11342</span>`], ["Engine hrs", `<span class="mono">1,905 h</span>`], ["Customer", "Sundquist Excavating"], ["Contact", "Karl Sundquist"], ["Acct terms", "Net 30 · In good standing"]]
+  },
+
+  "88231": {
+    dept: "service",
+    bay: "SCHEDULED · CUSTOMER-PAY",
+    title: "John Deere 6M 130 — Cooling System Diagnosis &amp; Thermostat",
+    sub: [["Unit", "Halvorsen #3"], ["PIN", "1L06130_JD22190", true], ["Customer", "Halvorsen Farms"], ["Opened", "Jul 1"]],
+    stamp: { cls: "scheduled", label: "Scheduled" },
+    priority: `Scheduled for <b>Jul 2, 8:00 AM</b><br>Not yet started`,
+    elapsed: `Age <b>4h</b> · Labor logged <b>0.0h</b> — not started`,
+    steps: [
+      { name: "Checked In", time: "Jul 1 · 10:30a", state: "done" },
+      { name: "Diagnosis", time: "Scheduled Jul 2", state: "current" },
+      { name: "Estimate", time: "—", state: "" },
+      { name: "Authorized", time: "Jul 1 · 11:00a", state: "done" },
+      { name: "Labor", time: "—", state: "" },
+      { name: "Quality Check", time: "—", state: "" },
+      { name: "Invoiced", time: "—", state: "" },
+      { name: "Closed", time: "—", state: "" }
+    ],
+    threeC: {
+      complaint: "Coolant temperature climbing under load; suspected thermostat or water pump. Customer needs it back Friday.",
+      cause: `<span class="muted">Pending — </span>Cooling system diagnosis scheduled for Jul 2.`,
+      correction: `<span class="muted">Not started. </span>Plan: diagnose cooling system, replace thermostat and housing, then pressure-test.`
+    },
+    laborTech: "Tech: R. Alvarez · Bay 2 (staged)",
+    labor: [
+      { op: "Cooling system diagnosis", code: "OP-COOL-DIAG · Straight time", est: "1.0h", actual: "—", tag: ["hold", "Scheduled"], amount: "$125.00" },
+      { op: "Thermostat &amp; housing R&amp;R", code: "OP-COOL-THRM · Flat rate 1.5h", est: "1.5h", actual: "—", tag: ["hold", "Scheduled"], amount: "$187.50" }
+    ],
+    partsMeta: "2 lines · staged",
+    parts: [
+      { num: "RE-61120", desc: "Thermostat kit", qty: "1", tag: ["done", "Staged"], ext: "$46.80" },
+      { num: "RE-61340", desc: "Coolant, 2 gal", qty: "1", tag: ["done", "Staged"], ext: "$28.40" }
+    ],
+    activity: [
+      { node: "", text: "<b>D. Castellano</b> scheduled job for Jul 2, 8:00 AM", time: "Jul 1 · 11:00 AM" },
+      { node: "", text: "Unit checked in — customer reports coolant temp climbing", time: "Jul 1 · 10:30 AM" }
+    ],
+    cost: {
+      rows: [["Labor (est 2.5h)", "$312.50"], ["Parts", "$75.20"], ["Shop supplies", "$10.00"], ["Est. tax", "$23.90"]],
+      customer: "$421.60", warranty: "$0.00", total: "$421.60",
+      note: "Estimated — work scheduled, not yet started."
+    },
+    auth: {
+      dot: "ok", state: "Authorized up to $550",
+      note: "Approved at booking; customer needs the unit back Friday.",
+      sigName: "P. Halvorsen", sigMeta: "Jul 1 · 11:00 AM · verbal + SMS confirm"
+    },
+    warranty: null,
+    meta: [["Model", "John Deere 6M 130"], ["PIN", `<span class="mono">1L06130_JD22190</span>`], ["Engine hrs", `<span class="mono">640 h</span>`], ["Customer", "Halvorsen Farms"], ["Contact", "Pers Halvorsen"], ["Acct terms", "Net 30 · In good standing"]]
   }
 };
 
