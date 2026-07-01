@@ -103,6 +103,7 @@ a { color: inherit; text-decoration: none; }
 .page-service .topbar { padding: 14px 28px; }
 .page-rentals .topbar { padding: 14px 28px; }
 .page-parts .topbar { padding: 14px 28px; }
+.page-sales .topbar { padding: 14px 28px; }
 .topbar-left h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.01em; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -223,7 +224,7 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
    work-order list, and upcoming appointments. Reuses the ticket,
    stat-strip, and section-head components.
    ============================================================ */
-.page-service .content, .page-rentals .content, .page-parts .content { padding: 24px 28px 60px 28px; }
+.page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content { padding: 24px 28px 60px 28px; }
 
 .page-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; gap: 16px; }
 .page-intro h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
@@ -278,6 +279,7 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .wo-head.dept-overdue::before { background: var(--clay); }
 .wo-head.dept-rental::before { background: var(--steel-blue); }
 .wo-head.dept-parts::before { background: var(--field-green); }
+.wo-head.dept-sales::before { background: var(--clay); }
 .wo-head-l { min-width: 0; }
 .wo-id-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .wo-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); letter-spacing: 0.04em; }
@@ -427,6 +429,26 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .act-time { font-size: 10.5px; color: var(--slate-light); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
 
 /* ============================================================
+   SALES PIPELINE (kanban)
+   ============================================================ */
+.kanban { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.kan-col { background: var(--paper-2); border: 1px solid var(--paper-line); border-radius: 4px; padding: 10px 10px 4px; }
+.kan-head { padding: 2px 3px 10px; border-bottom: 1px solid var(--paper-line); margin-bottom: 10px; }
+.kan-name { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate); display: flex; justify-content: space-between; align-items: baseline; }
+.kan-name .kan-count { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--slate-light); }
+.kan-total { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink); font-weight: 500; margin-top: 3px; }
+.kan-empty { font-size: 11.5px; color: var(--slate-light); font-style: italic; padding: 8px 3px; }
+
+.deal-card { display: block; background: white; border: 1px solid var(--paper-line); border-left: 3px solid var(--clay); border-radius: 3px; padding: 11px 12px; margin-bottom: 9px; text-decoration: none; color: var(--ink); transition: transform 0.08s ease, box-shadow 0.08s ease; }
+.deal-card:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(31,38,35,0.12); border-color: var(--slate-light); }
+.deal-card .dc-id { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--slate-light); }
+.deal-card .dc-cust { font-size: 13px; font-weight: 600; margin-top: 1px; }
+.deal-card .dc-equip { font-size: 11.5px; color: var(--slate); margin: 2px 0 8px; }
+.deal-card .dc-foot { display: flex; justify-content: space-between; align-items: baseline; }
+.deal-card .dc-val { font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 600; }
+.deal-card .dc-rep { font-size: 10.5px; color: var(--slate-light); }
+
+/* ============================================================
    TECHNICIAN BAY (mobile)
    A single-column, glove-friendly view scoped to one tech at one
    bay. Large tap targets, a live labor clock, and an operation
@@ -558,7 +580,7 @@ body.page-bay { background: #101512; }
 }
 
 @media (max-width: 600px) {
-  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content { padding: 18px 14px 48px; }
+  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content { padding: 18px 14px 48px; }
   .stat-strip { gap: 10px; }
   .site-switcher { display: none; }
 
