@@ -102,6 +102,7 @@ a { color: inherit; text-decoration: none; }
 .page-wo .topbar { padding: 12px 28px; }
 .page-service .topbar { padding: 14px 28px; }
 .page-rentals .topbar { padding: 14px 28px; }
+.page-parts .topbar { padding: 14px 28px; }
 .topbar-left h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.01em; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -191,7 +192,11 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
 .parts-qty { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
 .parts-qty.low { color: var(--clay-deep); }
 .parts-qty.backorder { color: var(--amber-deep); }
-.reorder-btn { font-size: 11px; font-weight: 600; color: white; background: var(--charcoal); padding: 5px 10px; border-radius: 2px; cursor: pointer; letter-spacing: 0.02em; }
+.reorder-btn { font-size: 11px; font-weight: 600; color: white; background: var(--charcoal); padding: 5px 10px; border-radius: 2px; cursor: pointer; letter-spacing: 0.02em; text-decoration: none; display: inline-block; }
+.po-link { font-size: 11.5px; font-weight: 600; color: var(--steel-blue-deep); text-decoration: none; }
+.po-link:hover { text-decoration: underline; }
+.ltable a.code { color: var(--steel-blue-deep); }
+.ltable a.code:hover { text-decoration: underline; }
 
 /* two column lower */
 .lower-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
@@ -218,7 +223,7 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
    work-order list, and upcoming appointments. Reuses the ticket,
    stat-strip, and section-head components.
    ============================================================ */
-.page-service .content, .page-rentals .content { padding: 24px 28px 60px 28px; }
+.page-service .content, .page-rentals .content, .page-parts .content { padding: 24px 28px 60px 28px; }
 
 .page-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; gap: 16px; }
 .page-intro h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
@@ -272,6 +277,7 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .wo-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
 .wo-head.dept-overdue::before { background: var(--clay); }
 .wo-head.dept-rental::before { background: var(--steel-blue); }
+.wo-head.dept-parts::before { background: var(--field-green); }
 .wo-head-l { min-width: 0; }
 .wo-id-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .wo-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); letter-spacing: 0.04em; }
@@ -353,6 +359,9 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .tag.hold { color: var(--clay-deep); background: rgba(180,80,46,0.06); }
 .tag.warranty { color: var(--steel-blue-deep); border-style: dashed; }
 .tag.backorder { color: var(--amber-deep); }
+.tag.low { color: var(--amber-deep); }
+.tag.onorder { color: var(--steel-blue-deep); }
+.tag.instock { color: var(--field-green-deep); }
 
 /* right rail */
 .side-card { background: white; border: 1px solid var(--paper-line); border-radius: 3px; margin-bottom: 18px; }
@@ -549,7 +558,7 @@ body.page-bay { background: #101512; }
 }
 
 @media (max-width: 600px) {
-  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content { padding: 18px 14px 48px; }
+  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content { padding: 18px 14px 48px; }
   .stat-strip { gap: 10px; }
   .site-switcher { display: none; }
 
