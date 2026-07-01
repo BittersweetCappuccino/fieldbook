@@ -1,5 +1,19 @@
+# Dependencies
 node_modules/
+
+# Environment
 .env
 .env.local
+
+# Build output
 dist/
-.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.log
