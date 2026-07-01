@@ -2,7 +2,7 @@
 
 **A product concept exploring the operational core of an equipment dealership: service, parts, rentals, sales, and manufacturer integrations in one system.**
 
-[View the interactive mockup →](#) *(link to hosted version - Soon)*
+**View the interactive mockup →** https://bittersweetcappuccino.github.io/fieldbook/
 
 ---
 
