@@ -280,6 +280,7 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .wo-head.dept-rental::before { background: var(--steel-blue); }
 .wo-head.dept-parts::before { background: var(--field-green); }
 .wo-head.dept-sales::before { background: var(--clay); }
+.wo-head.dept-warranty::before { background: var(--steel-blue); }
 .wo-head-l { min-width: 0; }
 .wo-id-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .wo-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); letter-spacing: 0.04em; }

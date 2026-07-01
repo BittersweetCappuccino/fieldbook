@@ -59,7 +59,7 @@ const RECORDS = {
       sigName: "M. Hendricks", sigMeta: "Jun 29 · 11:20 AM · verbal + SMS confirm"
     },
     warranty: {
-      lines: [["OEM", "John Deere"], ["Claim #", "WC-2291"], ["Coverage", "Powertrain 8R"], ["Op code", "8R-4471"]],
+      lines: [["OEM", "John Deere"], ["Claim #", `<a class="po-link" href="warranty.html?wc=2291">WC-2291</a>`], ["Coverage", "Powertrain 8R"], ["Op code", "8R-4471"]],
       status: `<b>Pre-authorized.</b> Submission held until PTO shield (JD-77410) is fitted and labor closed. Claim cannot be filed against an open op.`
     },
     meta: [["Model", "John Deere 8R 250"], ["PIN", `<span class="mono">1RW8R250_JD012947</span>`], ["Engine hrs", `<span class="mono">1,284 h</span>`], ["Customer", "Hendricks Family Farms"], ["Contact", "Marcus Hendricks"], ["Acct terms", "Net 30 · In good standing"]]
@@ -218,7 +218,7 @@ const RECORDS = {
     },
     warranty: {
       flagged: true,
-      lines: [["OEM", "Kubota"], ["Claim #", "WC-2288"], ["Coverage", "Powertrain M7"], ["Op code", "pending"]],
+      lines: [["OEM", "Kubota"], ["Claim #", `<a class="po-link" href="warranty.html?wc=2288">WC-2288</a>`], ["Coverage", "Powertrain M7"], ["Op code", "pending"]],
       status: `<b>Flagged — rejected.</b> Kubota returned the claim: the submitted unit serial does not match a warrantable PIN. Verify the serial on the frame plate and resubmit; the op cannot proceed until the unit is identified.`
     },
     meta: [["Model", "Kubota M7-172"], ["PIN", `<span class="warn">⚠ Serial unverified</span>`, "warn"], ["Engine hrs", `<span class="mono">892 h</span>`], ["Customer", "Thorson Dairy LLC"], ["Contact", "Erik Thorson"], ["Acct terms", "Net 30 · In good standing"]]
