@@ -101,6 +101,7 @@ a { color: inherit; text-decoration: none; }
 .page-dashboard .topbar { padding: 14px 28px; }
 .page-wo .topbar { padding: 12px 28px; }
 .page-service .topbar { padding: 14px 28px; }
+.page-rentals .topbar { padding: 14px 28px; }
 .topbar-left h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.01em; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -173,13 +174,13 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
 .ticket-meta span::after { content: "·"; margin-left: 10px; color: var(--paper-line); }
 .ticket-meta span:last-child::after { content: ""; }
 
-/* ticket stamp badge (small) — shared by dashboard and service board */
-.page-dashboard .stamp, .page-service .stamp { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 9px; border: 1.5px solid currentColor; border-radius: 3px; transform: rotate(-3deg); white-space: nowrap; flex-shrink: 0; }
-.page-dashboard .stamp.ready, .page-service .stamp.ready { color: var(--field-green-deep); }
-.page-dashboard .stamp.progress, .page-service .stamp.progress { color: var(--amber-deep); }
-.page-dashboard .stamp.waiting, .page-service .stamp.waiting { color: var(--clay-deep); }
-.page-dashboard .stamp.overdue, .page-service .stamp.overdue { color: var(--clay-deep); background: rgba(180,80,46,0.08); transform: rotate(-4deg); }
-.page-dashboard .stamp.scheduled, .page-service .stamp.scheduled { color: var(--steel-blue-deep); }
+/* ticket stamp badge (small) — any stamp inside a ticket (dashboard, service, rentals, sales…) */
+.ticket .stamp { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 9px; border: 1.5px solid currentColor; border-radius: 3px; transform: rotate(-3deg); white-space: nowrap; flex-shrink: 0; }
+.ticket .stamp.ready { color: var(--field-green-deep); }
+.ticket .stamp.progress { color: var(--amber-deep); }
+.ticket .stamp.waiting { color: var(--clay-deep); }
+.ticket .stamp.overdue { color: var(--clay-deep); background: rgba(180,80,46,0.08); transform: rotate(-4deg); }
+.ticket .stamp.scheduled { color: var(--steel-blue-deep); }
 
 /* parts alert list */
 .panel { background: white; border: 1px solid var(--paper-line); border-radius: 2px; padding: 4px 0; }
@@ -217,7 +218,7 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
    work-order list, and upcoming appointments. Reuses the ticket,
    stat-strip, and section-head components.
    ============================================================ */
-.page-service .content { padding: 24px 28px 60px 28px; }
+.page-service .content, .page-rentals .content { padding: 24px 28px 60px 28px; }
 
 .page-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; gap: 16px; }
 .page-intro h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
@@ -270,6 +271,7 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .wo-head { background: var(--charcoal); color: var(--cream-text); border-radius: 3px; padding: 20px 24px; display: flex; justify-content: space-between; gap: 24px; position: relative; overflow: hidden; margin-bottom: 6px; }
 .wo-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
 .wo-head.dept-overdue::before { background: var(--clay); }
+.wo-head.dept-rental::before { background: var(--steel-blue); }
 .wo-head-l { min-width: 0; }
 .wo-id-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .wo-id { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--amber); letter-spacing: 0.04em; }
@@ -280,12 +282,12 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .wo-head-r { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
 
 /* work order stamp badge (large header) */
-.page-wo .stamp { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; border: 2px solid currentColor; border-radius: 4px; transform: rotate(-3deg); white-space: nowrap; }
-.page-wo .stamp.progress { color: var(--amber); }
-.page-wo .stamp.ready { color: #7FB893; }
-.page-wo .stamp.waiting { color: #D98A63; }
-.page-wo .stamp.overdue { color: #E08663; background: rgba(224,134,99,0.1); }
-.page-wo .stamp.scheduled { color: #7C9BAA; }
+.wo-head .stamp { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; border: 2px solid currentColor; border-radius: 4px; transform: rotate(-3deg); white-space: nowrap; }
+.wo-head .stamp.progress { color: var(--amber); }
+.wo-head .stamp.ready { color: #7FB893; }
+.wo-head .stamp.waiting { color: #D98A63; }
+.wo-head .stamp.overdue { color: #E08663; background: rgba(224,134,99,0.1); }
+.wo-head .stamp.scheduled { color: #7C9BAA; }
 .wo-priority { font-size: 11px; color: var(--slate-light); text-align: right; }
 .wo-priority b { color: var(--cream-text); }
 .wo-priority b.warn { color: #E08663; }
@@ -330,6 +332,7 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .threec-label.complaint { border-left: 3px solid var(--clay); }
 .threec-label.cause { border-left: 3px solid var(--amber); }
 .threec-label.correction { border-left: 3px solid var(--field-green); }
+.threec-label.neutral { border-left: 3px solid var(--steel-blue); }
 .threec-text { padding: 14px 18px 14px 14px; font-size: 13px; }
 .threec-text .muted { color: var(--slate-light); font-style: italic; }
 
@@ -445,12 +448,12 @@ body.page-bay { background: #101512; }
 .bay-complaint { background: var(--paper-2); border-radius: 5px; padding: 11px 13px; font-size: 13.5px; }
 .bay-complaint .lbl { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--slate); display: block; margin-bottom: 3px; }
 
-.page-bay .stamp { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 5px 10px; border: 2px solid currentColor; border-radius: 4px; transform: rotate(-3deg); white-space: nowrap; flex-shrink: 0; }
-.page-bay .stamp.progress { color: var(--amber-deep); }
-.page-bay .stamp.waiting { color: var(--clay-deep); }
-.page-bay .stamp.ready { color: var(--field-green-deep); }
-.page-bay .stamp.overdue { color: var(--clay-deep); background: rgba(180,80,46,0.08); }
-.page-bay .stamp.scheduled { color: var(--steel-blue-deep); }
+.bay-hero .stamp { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 5px 10px; border: 2px solid currentColor; border-radius: 4px; transform: rotate(-3deg); white-space: nowrap; flex-shrink: 0; }
+.bay-hero .stamp.progress { color: var(--amber-deep); }
+.bay-hero .stamp.waiting { color: var(--clay-deep); }
+.bay-hero .stamp.ready { color: var(--field-green-deep); }
+.bay-hero .stamp.overdue { color: var(--clay-deep); background: rgba(180,80,46,0.08); }
+.bay-hero .stamp.scheduled { color: var(--steel-blue-deep); }
 
 /* my-jobs switcher — the technician's own queue, so the bay device
    is self-sufficient and doesn't depend on the manager dashboard */
@@ -546,7 +549,7 @@ body.page-bay { background: #101512; }
 }
 
 @media (max-width: 600px) {
-  .page-dashboard .content, .page-wo .content, .page-service .content { padding: 18px 14px 48px; }
+  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content { padding: 18px 14px 48px; }
   .stat-strip { gap: 10px; }
   .site-switcher { display: none; }
 
