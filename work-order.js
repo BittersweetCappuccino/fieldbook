@@ -312,18 +312,18 @@ function render(rec) {
 
         <div class="card">
           <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--amber)"></span>Labor Operations</div><div class="card-meta">${rec.laborTech}</div></div>
-          <table class="ltable">
+          <div class="table-wrap"><table class="ltable">
             <thead><tr><th>Op / Flat-Rate</th><th class="num">Est</th><th class="num">Actual</th><th>Status</th><th class="num">Amount</th></tr></thead>
             <tbody>${laborHTML(rec.labor)}</tbody>
-          </table>
+          </table></div>
         </div>
 
         <div class="card">
           <div class="card-head"><div class="card-title"><span class="swatch" style="background:var(--field-green)"></span>Parts</div><div class="card-meta">${rec.partsMeta}</div></div>
-          <table class="ltable">
+          <div class="table-wrap"><table class="ltable">
             <thead><tr><th>Part #</th><th>Description</th><th class="num">Qty</th><th>Status</th><th class="num">Ext.</th></tr></thead>
             <tbody>${partsHTML(rec.parts)}</tbody>
-          </table>
+          </table></div>
         </div>
 
         <div class="card">

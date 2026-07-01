@@ -47,4 +47,30 @@
     localStorage.setItem(KEY, collapsed ? "1" : "0");
     apply(collapsed);
   });
+
+  /* ---- mobile: off-canvas drawer ----
+     Below 900px the sidebar is a drawer. A hamburger in the topbar and a
+     backdrop (both injected here) open/close it; picking a nav item or
+     pressing Escape closes it. */
+  const topbar = document.querySelector(".topbar");
+  const hamburger = document.createElement("button");
+  hamburger.type = "button";
+  hamburger.className = "mobile-navbtn";
+  hamburger.setAttribute("aria-label", "Open menu");
+  hamburger.innerHTML =
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+  if (topbar) topbar.insertBefore(hamburger, topbar.firstChild);
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "nav-backdrop";
+  app.appendChild(backdrop);
+
+  function setDrawer(open) {
+    app.classList.toggle("nav-open", open);
+    hamburger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  }
+  hamburger.addEventListener("click", () => setDrawer(!app.classList.contains("nav-open")));
+  backdrop.addEventListener("click", () => setDrawer(false));
+  sidebar.querySelectorAll("a.nav-item").forEach(a => a.addEventListener("click", () => setDrawer(false)));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") setDrawer(false); });
 })();
