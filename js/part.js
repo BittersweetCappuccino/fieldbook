@@ -116,9 +116,12 @@ function historyHTML(rows) {
     `<div class="act-row"><div class="act-rail"><span class="act-node"></span></div>
       <div><div class="act-text">${text}</div><div class="act-time">${time}</div></div></div>`).join("") + `</div>`;
 }
-function reorderAction(a) {
+function reorderAction(rec) {
+  const a = rec.reorder.action;
   if (a.po) return `<a class="po-link" href="po.html?po=${a.po}">Track PO-${a.po} →</a>`;
-  return `<span class="reorder-btn">Reorder</span>`;
+  const qtyRow = rec.stock.find(r => r[0] === "Reorder qty");
+  const qty = qtyRow ? qtyRow[1] : "";
+  return `<a class="reorder-btn" href="new.html?type=po&part=${rec.num}&qty=${qty}">Reorder</a>`;
 }
 
 function render(rec) {
@@ -156,7 +159,7 @@ function render(rec) {
           <div class="side-head">Reorder</div>
           <div class="warr-body">
             <div class="warr-status${rec.reorder.flagged ? " flagged" : ""}">${rec.reorder.html}</div>
-            <div style="margin-top:12px;">${reorderAction(rec.reorder.action)}</div>
+            <div style="margin-top:12px;">${reorderAction(rec)}</div>
           </div>
         </div>
         <div class="side-card">

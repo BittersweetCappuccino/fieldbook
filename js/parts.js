@@ -73,7 +73,7 @@ function actionCell(p) {
   if (p.status === "backorder" || p.status === "onorder") {
     return `<a class="po-link" href="po.html?po=${p.po}">Track PO-${p.po} →</a>`;
   }
-  if (p.status === "low") return `<a class="reorder-btn" href="part.html?p=${p.num}">Reorder</a>`;
+  if (p.status === "low") return `<a class="reorder-btn" href="new.html?type=po&part=${p.num}">Reorder</a>`;
   return `<span style="color:var(--slate-light)">—</span>`;
 }
 
