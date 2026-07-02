@@ -52,6 +52,23 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== SIDEBAR ===== */
 .sidebar { background: var(--charcoal); color: var(--cream-text); padding: 20px 0; display: flex; flex-direction: column; position: relative; }
+
+/* ===== TOPBAR DROPDOWN MENUS (site switcher + account) ===== */
+.site-switcher, .avatar { position: relative; }
+.avatar { cursor: pointer; }
+.menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 224px; background: white; color: var(--ink); border: 1px solid var(--paper-line); border-radius: 6px; box-shadow: 0 10px 30px rgba(31,38,35,0.18); padding: 6px; z-index: 50; text-align: left; opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity 0.12s ease, transform 0.12s ease; cursor: default; }
+.menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.menu-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate-light); padding: 8px 10px 4px; }
+.menu-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 4px; font-size: 13px; color: var(--ink); cursor: pointer; text-decoration: none; }
+.menu-item:hover { background: var(--paper-2); }
+.menu-item.current { font-weight: 600; }
+.menu-item .mi-check { margin-left: auto; color: var(--field-green); display: flex; }
+.menu-item .mi-ico { display: flex; color: var(--slate); }
+.menu-sep { height: 1px; background: var(--paper-2); margin: 5px 2px; }
+.menu-head { display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px; }
+.menu-head .mh-av { width: 38px; height: 38px; border-radius: 5px; background: var(--steel-blue); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+.menu-head .mh-name { font-weight: 600; font-size: 13.5px; line-height: 1.25; }
+.menu-head .mh-role { font-size: 11.5px; color: var(--slate); line-height: 1.25; margin-top: 1px; }
 .brand { padding: 0 20px 24px; border-bottom: 1px solid rgba(242,239,230,0.1); margin-bottom: 18px; }
 .brand-mark { display: flex; align-items: center; gap: 9px; }
 .brand-mark svg { flex-shrink: 0; }
