@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pressure Test — Fieldbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<style>
+  /* ============================================================
+     PRESSURE TEST — case-study addendum
+     A reading page, not an app screen: single centered column on
+     the paper ground, charcoal header slab with the amber spine,
+     reusing the shared design tokens, Oswald display face, and the
+     .ltable aesthetic for the decision matrix.
+     ============================================================ */
+  body.page-doc { background: var(--paper); }
+  .doc { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .doc-topnav { max-width: 820px; margin: 0 auto; padding: 20px 24px 0; }
+  .doc-back { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: var(--slate); text-decoration: none; }
+  .doc-back:hover { color: var(--ink); }
+  .doc-back svg { transition: transform 0.12s ease; }
+  .doc-back:hover svg { transform: translateX(-2px); }
+
+  /* header slab — echoes the work-order head: charcoal + amber spine */
+  .doc-head { background: var(--charcoal); color: var(--cream-text); border-radius: 4px; padding: 30px 32px; position: relative; overflow: hidden; margin: 16px 0 30px; }
+  .doc-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
+  .doc-kicker { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+  .doc-head h1 { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 600; line-height: 1.12; letter-spacing: 0.01em; margin: 8px 0 0; }
+  .doc-addendum { font-size: 13px; color: var(--slate-light); margin-top: 12px; }
+  .doc-addendum a { color: #7C9BAA; border-bottom: 1px solid rgba(124,155,170,0.4); }
+  .doc-addendum a:hover { color: var(--cream-text); }
+
+  /* prose */
+  .doc p { font-size: 15px; line-height: 1.72; color: var(--ink); margin: 0 0 18px; }
+  .doc .lede { font-size: 16.5px; line-height: 1.65; color: var(--charcoal-2); }
+  .doc a { color: var(--steel-blue-deep); text-decoration: none; border-bottom: 1px solid var(--paper-line); }
+  .doc a:hover { border-bottom-color: var(--steel-blue); }
+  .doc a.mono { font-family: 'IBM Plex Mono', monospace; font-size: 0.92em; }
+
+  .doc h2 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; margin: 40px 0 14px; display: flex; align-items: center; gap: 11px; }
+  .doc h2 .swatch { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+  /* numbered findings — bold lead sentence, like the paper's stamped points */
+  .finding { margin: 0 0 18px; }
+  .finding-label { font-weight: 600; color: var(--ink); }
+
+  code { font-family: 'IBM Plex Mono', monospace; font-size: 0.88em; background: var(--paper-2); border: 1px solid var(--paper-line); border-radius: 3px; padding: 1px 5px; color: var(--clay-deep); }
+
+  /* decision matrix — reuses the .ltable look */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 0 20px; }
+  table.matrix { width: 100%; border-collapse: collapse; background: white; border: 1px solid var(--paper-line); border-radius: 3px; min-width: 640px; }
+  table.matrix th { font-family: 'Oswald', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate); font-weight: 600; text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--paper-2); background: var(--paper-2); }
+  table.matrix td { padding: 14px 16px; border-bottom: 1px solid var(--paper-2); font-size: 13.5px; line-height: 1.5; vertical-align: top; }
+  table.matrix tr:last-child td { border-bottom: none; }
+  table.matrix td:last-child { border-left: 3px solid var(--field-green); font-weight: 500; }
+  table.matrix strong { font-weight: 600; }
+
+  /* horizontal rule / section break */
+  .doc hr { border: none; border-top: 1px solid var(--paper-line); margin: 34px 0; }
+
+  /* method note — a tinted end card, like the shop-floor status panels */
+  .note-card { background: rgba(74,108,122,0.06); border: 1px solid var(--paper-line); border-left: 3px solid var(--steel-blue); border-radius: 3px; padding: 18px 20px; margin-top: 8px; }
+  .note-card h2 { margin-top: 0; }
+  .note-card .disclaimer { font-size: 12.5px; color: var(--slate); font-style: italic; margin-bottom: 0; }
+
+  @media (max-width: 600px) {
+    .doc, .doc-topnav { padding-left: 16px; padding-right: 16px; }
+    .doc-head { padding: 24px 22px; }
+    .doc-head h1 { font-size: 25px; }
+  }
+</style>
+</head>
+<body class="page-doc">
+
+<nav class="doc-topnav">
+  <a class="doc-back" href="../index.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back to Fieldbook
+  </a>
+</nav>
+
+<article class="doc">
+
+  <header class="doc-head">
+    <div class="doc-kicker">Case Study · Addendum</div>
+    <h1>Pressure Test: Fieldbook's Sync Feed vs. a Real OEM API</h1>
+    <div class="doc-addendum">Addendum to the <a href="https://github.com/BittersweetCappuccino/fieldbook#readme">Fieldbook — Dealer Operations</a> case study.</div>
+  </header>
+
+  <p class="lede">The original Fieldbook concept closed with a commitment: before treating the manufacturer sync feed as a real design, pressure-test it against an actual OEM's API constraints. This addendum does that, using John Deere's public developer portal (<a class="mono" href="https://developer.deere.com">developer.deere.com</a>) as the reference contract — Deere being both the most prominent OEM in the mockup and the one with the most mature public documentation.</p>
+
+  <p>The short version: the concept's mental model of the OEM relationship was too optimistic in three specific ways, and each one changes a product decision.</p>
+
+  <hr>
+
+  <h2><span class="swatch"></span>What the mockup assumed</h2>
+  <p>The Fieldbook dashboard renders the manufacturer feed as a stream of discrete, timely events — a warranty credit posts, a shipment ETA updates, a claim gets flagged — implying that OEM data arrives in near-real-time, that integrated entities are stable references, and that "integrating with an OEM" is a single connection with uniform data behind it.</p>
+
+  <h2><span class="swatch"></span>What the documentation actually says</h2>
+
+  <p class="finding"><span class="finding-label">1. The dominant pattern is polling, not push.</span><br>
+  Deere's docs describe an eTag mechanism for clients that poll APIs on a regular cadence, returning only data modified since the last request. The existence of purpose-built polling optimization tells you what the architecture expects: the client asks repeatedly; the OEM does not push. A "live feed" is really a "recently polled feed."</p>
+
+  <p class="finding"><span class="finding-label">2. The OEM will throttle you, and the contract says how.</span><br>
+  Rate limiting is explicit: overwhelmed servers return HTTP <code>429</code> with a <code>Retry-After</code> header, and clients are required to wait out the specified interval before retrying. The docs even distinguish between synchronous flows (where a human is waiting and the app should error out) and asynchronous flows (where the app should always honor the wait). Backpressure isn't an edge case — it's a documented, expected state.</p>
+
+  <p class="finding"><span class="finding-label">3. Cached OEM data goes stale by design.</span><br>
+  Resource IDs are meant to be parsed from fresh API responses immediately before use, because access to a resource can change or be revoked over time. A DMS cannot mirror OEM entities into its own database and treat them as durable — the OEM's data model assumes re-verification.</p>
+
+  <p class="finding"><span class="finding-label">4. "One integration" is actually a bundle of licensed scopes.</span><br>
+  Access is OAuth 2.0 with per-endpoint scopes, granted explicitly by the authenticating user, and an application can be denied at the endpoint level if it isn't licensed for it. Two dealers "integrated with John Deere" may have materially different data available to them depending on which scopes were granted and which endpoints the application is licensed for.</p>
+
+  <hr>
+
+  <h2><span class="swatch"></span>What changes in the product</h2>
+
+  <div class="table-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Concept assumption</th>
+          <th>Documented reality</th>
+          <th>Product decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Feed events arrive in real time</td>
+          <td>Polling cadence + eTags; freshness is bounded by poll interval</td>
+          <td>Every OEM panel shows a <strong>"last synced" timestamp</strong>; the UI never implies liveness it can't guarantee</td>
+        </tr>
+        <tr>
+          <td>Sync failures are exceptional</td>
+          <td>429 + Retry-After is a normal, documented state</td>
+          <td>Throttling surfaces as a calm <strong>"sync delayed — retrying at HH:MM"</strong> status, not an error banner; the dealer sees a schedule, not a failure</td>
+        </tr>
+        <tr>
+          <td>OEM entities can be cached as stable records</td>
+          <td>Resource references expire; access can be revoked</td>
+          <td>The system of record stores <strong>our</strong> work orders and parts records with OEM <em>references</em>, re-resolved at read time — never mirrored OEM state treated as truth</td>
+        </tr>
+        <tr>
+          <td>One OEM = one integration</td>
+          <td>Per-endpoint licensing and user-granted scopes</td>
+          <td>Integration status is displayed <strong>per capability</strong> (warranty claims ✓, parts availability ✓, financial data —), so a dealer knows exactly what their connection covers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <h2><span class="swatch"></span>Why this matters beyond Deere</h2>
+  <p>Deere happens to publish its contract; Kubota, Case IH, and Toro each have their own, with different maturity levels and different gaps. The design consequence is that the integration layer can't be built to the <em>best</em> OEM's behavior — it has to be built to a <strong>capability model</strong> that degrades gracefully: each OEM slot in the feed declares what it supports (push vs. poll, event types, freshness guarantees), and the UI renders honestly against that declaration.</p>
+
+  <p>That's the real lesson of the pressure test. The first version of the sync feed was designed around what a dealer <em>wants to see</em>. The revised model is designed around what the product can <em>truthfully promise</em> — and makes the gap between the two visible instead of papering over it.</p>
+
+  <div class="note-card">
+    <h2 style="font-size:15px;"><span class="swatch" style="background:var(--steel-blue);"></span>Method note</h2>
+    <p>This analysis was done entirely from public developer documentation — no API access required. For a production effort, the next steps would be: sandbox access to validate assumed payload shapes against real responses, a comparison pass across the other three OEMs' partner programs to populate the capability model, and a conversation with an actual dealer principal about which sync delays are tolerable and which block revenue.</p>
+    <p class="disclaimer">Built as a product analysis exercise, not affiliated with or endorsed by Deere &amp; Company or any other manufacturer named.</p>
+  </div>
+
+</article>
+
+</body>
+</html>
