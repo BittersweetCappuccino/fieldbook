@@ -433,6 +433,74 @@ function warrantyHTML(w) {
     </div></div>`;
 }
 
+/* ---------- Actions menu ----------
+   The topbar Actions button opens a menu whose top item is contextual to
+   where the job sits in its lifecycle (stamp.cls); the rest are the
+   standard work-order operations. sidebar.js owns open/close + outside
+   click; here we only build the items. Items with data-href navigate,
+   data-act="print" prints; the rest are placeholders that just close
+   (consistent with the account menu in this prototype). */
+const AI = {
+  qc:      '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  invoice: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/>',
+  tech:    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
+  play:    '<polygon points="5 3 19 12 5 21 5 3"/>',
+  box:     '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>',
+  labor:   '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  edit:    '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+  status:  '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>',
+  print:   '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+  mail:    '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  shield:  '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  cancel:  '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>'
+};
+function aicon(p) { return '<span class="mi-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + p + '</svg></span>'; }
+
+// contextual lead action, keyed by lifecycle stamp
+const LEAD_ACTION = {
+  progress:  { ico: AI.qc,      text: "Mark ready for QC" },
+  waiting:   { ico: AI.box,     text: "Update parts ETA" },
+  ready:     { ico: AI.invoice, text: "Generate invoice" },
+  overdue:   { ico: AI.tech,    text: "Assign technician" },
+  scheduled: { ico: AI.play,    text: "Start job" }
+};
+
+function buildActionsMenu(rec) {
+  const btn = document.getElementById("wo-actions");
+  if (!btn) return;
+  // opt: { attrs: extra attributes, cls: extra class on the item }
+  const mi = (ico, text, opt) => `<div class="menu-item${opt && opt.cls ? " " + opt.cls : ""}"${opt && opt.attrs ? " " + opt.attrs : ""}>${aicon(ico)}${text}</div>`;
+  const sep = '<div class="menu-sep"></div>';
+  const label = t => '<div class="menu-label">' + t + '</div>';
+
+  let html = '<div class="menu wo-actions-menu">';
+
+  const lead = LEAD_ACTION[rec.stamp.cls];
+  if (lead) html += mi(lead.ico, lead.text);
+
+  html += sep + label("Work order");
+  html += mi(AI.labor, "Add labor line");
+  html += mi(AI.box, "Add parts");
+  html += mi(AI.status, "Update status");
+  html += mi(AI.edit, "Edit details");
+
+  html += sep + label("Share");
+  html += mi(AI.print, "Print work order", { attrs: 'data-act="print"' });
+  html += mi(AI.mail, "Email to customer");
+
+  const w = rec.warranty;
+  if (w && Array.isArray(w.lines)) {
+    const claim = w.lines.find(([k]) => k === "Claim #");
+    const m = claim && /wc=(\d+)/.exec(claim[1]);
+    if (m) html += sep + mi(AI.shield, "View warranty claim WC-" + m[1], { attrs: 'data-href="warranty.html?wc=' + m[1] + '"' });
+  }
+
+  html += sep + mi(AI.cancel, "Cancel work order", { cls: "danger" });
+
+  html += '</div>';
+  btn.insertAdjacentHTML("beforeend", html);
+}
+
 function render(rec) {
   const c = rec.cost;
   document.getElementById("content").innerHTML = `
@@ -513,6 +581,7 @@ function render(rec) {
   const rec = RECORDS[id] || RECORDS["88213"];
   rec.id = "WO-" + (RECORDS[id] ? id : "88213");
   render(rec);
+  buildActionsMenu(rec);
   document.title = "Fieldbook — " + rec.id;
   document.getElementById("crumb-here").textContent = rec.id;
   document.getElementById("bay-link").href = "bay.html?wo=" + (RECORDS[id] ? id : "88213");

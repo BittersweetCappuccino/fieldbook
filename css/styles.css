@@ -132,6 +132,15 @@ a { color: inherit; text-decoration: none; }
 .btn { font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: 2px; cursor: pointer; border: 1px solid var(--paper-line); background: white; color: var(--ink); letter-spacing: 0.02em; }
 .btn.primary { background: var(--charcoal); color: var(--cream-text); border-color: var(--charcoal); }
 
+/* Actions dropdown button (work order topbar) */
+.actions-btn { position: relative; display: inline-flex; align-items: center; gap: 6px; user-select: none; }
+.actions-btn .ab-caret { transition: transform 0.15s ease; }
+.actions-btn:has(.menu.open) .ab-caret { transform: rotate(180deg); }
+.wo-actions-menu { min-width: 236px; }
+.menu-item.danger { color: var(--clay); }
+.menu-item.danger .mi-ico { color: var(--clay); }
+.menu-item.danger:hover { background: rgba(180,80,46,0.10); }
+
 /* breadcrumb (work order) */
 .crumb { font-size: 12.5px; color: var(--slate); display: flex; align-items: center; gap: 8px; }
 .crumb a:hover { color: var(--ink); }

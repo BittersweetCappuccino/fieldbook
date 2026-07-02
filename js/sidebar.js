@@ -133,6 +133,7 @@
 
     const switcher = topbarEl.querySelector(".site-switcher");
     const avatar = topbarEl.querySelector(".avatar");
+    const actionsBtn = topbarEl.querySelector(".actions-btn");
 
     function icon(p) { return '<span class="mi-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + p + '</svg></span>'; }
 
@@ -161,6 +162,7 @@
 
     function closeAll(except) {
       topbarEl.querySelectorAll(".menu.open").forEach(m => { if (m !== except) m.classList.remove("open"); });
+      if (actionsBtn) actionsBtn.setAttribute("aria-expanded", actionsBtn.querySelector(".menu.open") ? "true" : "false");
     }
     function openMenu(m) { closeAll(m); if (m) m.classList.add("open"); }
 
@@ -180,15 +182,26 @@
         e.preventDefault();
         if (item.dataset.site) { current = item.dataset.site; localStorage.setItem(SITE_KEY, current); applySite(); closeAll(); return; }
         if (item.dataset.acct === "switch") { closeAll(); if (switcher) openMenu(switcher.querySelector(".menu")); return; }
-        closeAll(); return; // placeholder account item
+        if (item.dataset.href) { closeAll(); location.href = item.dataset.href; return; }
+        if (item.dataset.act === "print") { closeAll(); window.print(); return; }
+        closeAll(); return; // placeholder item (no wired handler)
       }
       if (e.target.closest(".menu")) return; // clicks on menu chrome keep it open
       const sw = switcher && e.target.closest(".site-switcher");
       if (sw) { const m = switcher.querySelector(".menu"); m.classList.contains("open") ? closeAll() : openMenu(m); return; }
       const av = avatar && e.target.closest(".avatar");
       if (av) { const m = avatar.querySelector(".menu"); m.classList.contains("open") ? closeAll() : openMenu(m); return; }
+      const ac = actionsBtn && e.target.closest(".actions-btn");
+      if (ac) { const m = actionsBtn.querySelector(".menu"); if (m) { m.classList.contains("open") ? closeAll() : openMenu(m); } return; }
       closeAll();
     });
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });
+    if (actionsBtn) actionsBtn.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const m = actionsBtn.querySelector(".menu");
+        if (m) { m.classList.contains("open") ? closeAll() : openMenu(m); }
+      }
+    });
   }
 })();
