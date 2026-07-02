@@ -16,8 +16,7 @@
   btn.type = "button";
   btn.className = "sidebar-toggle";
   btn.innerHTML =
-    '<span class="tgl-text">Collapse</span>' +
-    '<span class="tgl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></span>';
+    '<span class="tgl-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></span>';
   sidebar.insertBefore(btn, sidebar.firstChild);
 
   function apply(collapsed) {
