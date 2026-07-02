@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fieldbook — Part</title>
+<title>Fieldbook — Manufacturer Integrations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body class="page-wo">
+<body class="page-manufacturers">
 <div class="app">
 
   <!-- SIDEBAR -->
@@ -34,7 +34,7 @@
     </a>
 
     <div class="nav-group-label">Departments</div>
-    <a class="nav-item" href="../index.html#sales">
+    <a class="nav-item" href="sales.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M2 4h3l2.4 12.4a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 7H6"/></svg>
       Sales <span class="count">18</span>
     </a>
@@ -42,7 +42,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
       Service <span class="count">7</span>
     </a>
-    <a class="nav-item active" href="parts.html">
+    <a class="nav-item" href="parts.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.9 7.5-9 4.7a2 2 0 0 0-2 0l-8.9 5a2 2 0 0 0-1 1.7v9.6a2 2 0 0 0 1 1.7l8.9 5a2 2 0 0 0 2 0l8.9-5a2 2 0 0 0 1-1.7v-9.6a2 2 0 0 0-1-1.7Z" transform="translate(1 0)"/><path d="M2.6 9.7 12 15l9.4-5.3M12 22V15"/></svg>
       Parts <span class="count">6</span>
     </a>
@@ -60,7 +60,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Customers
     </div>
-    <a class="nav-item" href="manufacturers.html">
+    <a class="nav-item active" href="manufacturers.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       Manufacturers
     </a>
@@ -76,21 +76,44 @@
       <div class="crumb">
         <a href="../index.html">Dashboard</a>
         <span class="sep">/</span>
-        <a href="parts.html">Parts</a>
-        <span class="sep">/</span>
-        <span class="here" id="crumb-here">RE-52341</span>
+        <span class="here">Manufacturers</span>
       </div>
       <div class="topbar-right">
-        <div class="btn primary">Actions ▾</div>
+        <div class="site-switcher">
+          Prairie Line — Fargo
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
         <div class="avatar">DC</div>
       </div>
     </div>
 
-    <div class="content" id="content"><!-- rendered by JS --></div>
+    <div class="content">
+
+      <div class="page-intro">
+        <div>
+          <h1>Manufacturer Integrations</h1>
+          <div class="sub">Connection health, per-OEM capabilities, and the integration log</div>
+        </div>
+        <div class="intro-action">+ Add Connection</div>
+      </div>
+
+      <div class="stat-strip" id="mf-stats"><!-- rendered by JS --></div>
+
+      <div class="section-head">
+        <div class="section-title"><span class="swatch" style="background:var(--charcoal-3)"></span>Connections</div>
+      </div>
+      <div class="oem-grid" id="mf-oems"><!-- rendered by JS --></div>
+
+      <div class="section-head">
+        <div class="section-title"><span class="swatch" style="background:var(--steel-blue)"></span>Integration Log</div>
+      </div>
+      <div class="panel" id="mf-log"><!-- rendered by JS --></div>
+
+    </div>
   </div>
 </div>
 
 <script src="../js/sidebar.js"></script>
-<script src="../js/part.js"></script>
+<script src="../js/manufacturers.js"></script>
 </body>
 </html>

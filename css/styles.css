@@ -104,6 +104,7 @@ a { color: inherit; text-decoration: none; }
 .page-rentals .topbar { padding: 14px 28px; }
 .page-parts .topbar { padding: 14px 28px; }
 .page-sales .topbar { padding: 14px 28px; }
+.page-manufacturers .topbar { padding: 14px 28px; }
 .topbar-left h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.01em; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -224,7 +225,7 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
    work-order list, and upcoming appointments. Reuses the ticket,
    stat-strip, and section-head components.
    ============================================================ */
-.page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content { padding: 24px 28px 60px 28px; }
+.page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content { padding: 24px 28px 60px 28px; }
 
 .page-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; gap: 16px; }
 .page-intro h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
@@ -450,6 +451,45 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .deal-card .dc-rep { font-size: 10.5px; color: var(--slate-light); }
 
 /* ============================================================
+   MANUFACTURER INTEGRATIONS
+   Per-OEM connection health + capability matrix. Modes are honest
+   about how each function actually integrates (real-time API vs
+   poll vs nightly batch vs portal-only vs manual).
+   ============================================================ */
+.oem-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 30px; }
+.oem-card { background: white; border: 1px solid var(--paper-line); border-radius: 4px; overflow: hidden; }
+.oem-head { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--paper-2); }
+.oem-badge { width: 40px; height: 40px; border-radius: 6px; background: var(--charcoal); color: var(--cream-text); display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.oem-name { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; }
+.oem-auth { font-size: 11px; color: var(--slate); margin-top: 1px; }
+.oem-status { margin-left: auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 9px; border-radius: 999px; border: 1px solid currentColor; flex-shrink: 0; }
+.oem-status.connected { color: var(--field-green-deep); }
+.oem-status.action { color: var(--clay-deep); background: rgba(180,80,46,0.07); }
+.oem-status.portal { color: var(--amber-deep); }
+
+.cap-row { display: flex; align-items: center; gap: 10px; padding: 9px 16px; border-bottom: 1px solid var(--paper-2); font-size: 12.5px; }
+.cap-row:last-child { border-bottom: none; }
+.cap-name { width: 122px; flex-shrink: 0; font-weight: 500; }
+.cap-mode { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; }
+.cap-mode.api { color: var(--field-green-deep); }
+.cap-mode.poll { color: var(--steel-blue-deep); }
+.cap-mode.batch { color: var(--amber-deep); }
+.cap-mode.portal { color: var(--clay-deep); }
+.cap-mode.manual { color: var(--slate); }
+.cap-mode.none { color: var(--slate-light); border-style: dashed; }
+.cap-fresh { margin-left: auto; font-size: 11px; color: var(--slate); font-family: 'IBM Plex Mono', monospace; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.cap-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cap-dot.ok { background: var(--field-green); }
+.cap-dot.warn { background: var(--amber); }
+.cap-dot.error { background: var(--clay); }
+.oem-note { padding: 10px 16px; background: rgba(180,80,46,0.05); border-top: 1px solid var(--paper-2); font-size: 12px; color: var(--clay-deep); }
+
+@media (max-width: 600px) {
+  .cap-name { width: auto; }
+  .cap-fresh { display: none; }
+}
+
+/* ============================================================
    TECHNICIAN BAY (mobile)
    A single-column, glove-friendly view scoped to one tech at one
    bay. Large tap targets, a live labor clock, and an operation
@@ -581,7 +621,7 @@ body.page-bay { background: #101512; }
 }
 
 @media (max-width: 600px) {
-  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content { padding: 18px 14px 48px; }
+  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content { padding: 18px 14px 48px; }
   .stat-strip { gap: 10px; }
   .site-switcher { display: none; }
 
