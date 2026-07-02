@@ -106,6 +106,7 @@ a { color: inherit; text-decoration: none; }
 .page-sales .topbar { padding: 14px 28px; }
 .page-manufacturers .topbar { padding: 14px 28px; }
 .page-customers .topbar { padding: 14px 28px; }
+.page-reporting .topbar { padding: 14px 28px; }
 .topbar-left h1 { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.01em; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -226,7 +227,7 @@ a.ticket:hover .ticket-title { color: var(--amber-deep); }
    work-order list, and upcoming appointments. Reuses the ticket,
    stat-strip, and section-head components.
    ============================================================ */
-.page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content, .page-customers .content { padding: 24px 28px 60px 28px; }
+.page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content, .page-customers .content, .page-reporting .content { padding: 24px 28px 60px 28px; }
 
 .page-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; gap: 16px; }
 .page-intro h1 { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
@@ -453,6 +454,24 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
 .deal-card .dc-rep { font-size: 10.5px; color: var(--slate-light); }
 
 /* ============================================================
+   REPORTING (hand-built charts)
+   ============================================================ */
+.col-chart { display: flex; align-items: flex-end; gap: 10px; padding: 16px 18px 12px; }
+.col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+.col-val { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--slate); }
+.col-bar { width: 100%; max-width: 40px; background: var(--field-green); border-radius: 3px 3px 0 0; min-height: 3px; }
+.col-bar.hi { background: var(--amber); }
+.col-label { font-size: 10.5px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.util-big { padding: 16px 18px 6px; }
+.util-num { font-family: 'Oswald', sans-serif; font-size: 34px; font-weight: 700; line-height: 1; }
+.util-sub { font-size: 11.5px; color: var(--slate); margin: 2px 0 12px; }
+.util-break { display: flex; gap: 8px; padding: 0 18px 16px; }
+.util-chip { flex: 1; border: 1px solid var(--paper-line); border-radius: 3px; padding: 8px 10px; text-align: center; }
+.util-chip .n { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; }
+.util-chip .l { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--slate); margin-top: 2px; }
+
+/* ============================================================
    MANUFACTURER INTEGRATIONS
    Per-OEM connection health + capability matrix. Modes are honest
    about how each function actually integrates (real-time API vs
@@ -623,7 +642,7 @@ body.page-bay { background: #101512; }
 }
 
 @media (max-width: 600px) {
-  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content, .page-customers .content { padding: 18px 14px 48px; }
+  .page-dashboard .content, .page-wo .content, .page-service .content, .page-rentals .content, .page-parts .content, .page-sales .content, .page-manufacturers .content, .page-customers .content, .page-reporting .content { padding: 18px 14px 48px; }
   .stat-strip { gap: 10px; }
   .site-switcher { display: none; }
 
