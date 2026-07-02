@@ -20,20 +20,20 @@ That's the insight the concept is built around: a DMS replacing a paper system t
 
 ## Design approach
 
-**Grounding in the subject** Instead of designing "a dashboard," I designed a shop floor. The signature UI element is a torn-ticket card — perforated edges, a department-coded stripe, a rotated ink-stamp status badge (*Ready*, *In Progress*, *Waiting on Parts*, *Overdue*). It's a direct translation of the paper work order into a digital component, so a service manager who's spent 20 years reading paper tags can read the screen in the same glance.
+**Grounding in the subject.** Instead of designing "a dashboard," I designed a shop floor. The signature UI element is a torn-ticket card — perforated edges, a department-coded stripe, a rotated ink-stamp status badge (*Ready*, *In Progress*, *Waiting on Parts*, *Overdue*). It's a direct translation of the paper work order into a digital component, so a service manager who's spent 20 years reading paper tags can read the screen in the same glance.
 
-**Color as department** Amber for service, green for parts, steel blue for rentals, clay for sales-critical alerts. The color isn't cosmetic — it's a wayfinding system, the same way a dealership might color-code job tags by department.
+**Color as department.** Amber for service, green for parts, steel blue for rentals, clay for sales-critical alerts. The color isn't cosmetic — it's a wayfinding system, the same way a dealership might color-code job tags by department.
 
-**Typography built for a shop** A condensed industrial display face (Oswald) for headers reads clearly at a glance from a distance — the way you'd need to read a status board on a shop wall. Monospace for part numbers and work order IDs, because those need to be scannable and unambiguous. A plain, high-legibility sans for body text and dense data.
+**Typography built for a shop.** A condensed industrial display face (Oswald) for headers reads clearly at a glance from a distance — the way you'd need to read a status board on a shop wall. Monospace for part numbers and work order IDs, because those need to be scannable and unambiguous. A plain, high-legibility sans for body text and dense data.
 
-**Structure** The five modules on the dashboard — service bay board, parts alerts, rental fleet, sales pipeline, manufacturer sync feed — map directly to the responsibilities, including the often-overlooked manufacturer relationship/integration piece, which is specific to how dealer networks work (allocations, warranty claims, co-op programs all flow through the OEM relationship).
+**Structure.** The five modules on the dashboard — service bay board, parts alerts, rental fleet, sales pipeline, manufacturer sync feed — map directly to the responsibilities, including the often-overlooked manufacturer relationship/integration piece, which is specific to how dealer networks work (allocations, warranty claims, co-op programs all flow through the OEM relationship).
 
 ## Product thinking behind the surface
 
-- **The dashboard leads with what's blocking work** Open work orders, backordered parts, overdue rentals, and pipeline value are the four numbers that tell a GM whether today is going fine or going sideways.
+- **The dashboard leads with what's blocking work.** Open work orders, backordered parts, overdue rentals, and pipeline value are the four numbers that tell a GM whether today is going fine or going sideways.
 - **Overdue states use both color and a stamp label, never color alone**, since this is a screen used in bright shop-floor lighting and glanced at, not read closely — redundant signaling matters more here than in a typical office SaaS product.
 - **The manufacturer feed is transactional, not a notification dump.** Each line is an event with a business consequence (credit posted, shipment ETA, claim flagged), because in this world, a stalled manufacturer sync directly blocks a technician's ability to close a job.
 
 ---
 
-*Built as a product/UI concept exercise, not built for or affiliated with any specific company. Tech: hand-coded HTML/CSS.*
+*Built as a product/UI concept exercise, not built for or affiliated with any specific company. Tech: hand-coded HTML/CSS/JavaScript.*
