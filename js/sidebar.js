@@ -73,6 +73,46 @@
   sidebar.querySelectorAll("a.nav-item").forEach(a => a.addEventListener("click", () => setDrawer(false)));
   document.addEventListener("keydown", e => { if (e.key === "Escape") setDrawer(false); });
 
+  /* ---- Back button on nested detail screens ----
+     Nested screens carry a `#crumb-here` leaf in their breadcrumb; the
+     department index pages do not. Give those detail screens a Back
+     affordance in the topbar. It prefers in-app history so it feels
+     native, but falls back to the parent breadcrumb link on a direct
+     load (empty/off-site referrer) so the user is never stranded. The
+     fallback target is read lazily at click time, so screens that set
+     their crumb link after load (e.g. the New… form) still work. */
+  if (topbar && document.getElementById("crumb-here")) {
+    const crumb = topbar.querySelector(".crumb");
+    const parentLink = crumb && crumb.querySelector("a:last-of-type");
+    if (crumb) {
+      const back = document.createElement("a");
+      back.className = "back-btn";
+      back.href = (parentLink && parentLink.getAttribute("href")) || "#";
+      back.setAttribute("aria-label", "Back");
+      back.innerHTML =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>' +
+        '<span class="bb-label">Back</span>';
+
+      // wrap the back button + crumb so they stay grouped on the left
+      // while the topbar's space-between keeps the account menu on the right
+      const group = document.createElement("div");
+      group.className = "crumb-group";
+      crumb.parentNode.insertBefore(group, crumb);
+      group.appendChild(back);
+      group.appendChild(crumb);
+
+      back.addEventListener("click", e => {
+        let sameOrigin = false;
+        try { sameOrigin = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (_) {}
+        if (history.length > 1 && sameOrigin) { e.preventDefault(); history.back(); return; }
+        const link = crumb.querySelector("a:last-of-type");
+        const href = link && link.getAttribute("href");
+        if (href && href !== "#") { e.preventDefault(); location.href = href; }
+        // otherwise fall through to the anchor's own href
+      });
+    }
+  }
+
   /* ---- topbar dropdowns: site/location switcher + account menu ----
      Wired here (rather than a per-page script) since sidebar.js already
      loads on every page that has the shared topbar. */
