@@ -135,6 +135,11 @@
     const avatar = topbarEl.querySelector(".avatar");
     const actionsBtn = topbarEl.querySelector(".actions-btn");
 
+    // Account-menu targets resolve relative to where the shared topbar loads:
+    // the dashboard sits at the repo root, every other screen under /pages/.
+    const inPages = /\/pages\//.test(location.pathname);
+    const PREFIX = inPages ? "" : "pages/";
+
     function icon(p) { return '<span class="mi-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + p + '</svg></span>'; }
 
     /* ---- contextual Actions menu for the simple entity pages ----
@@ -300,13 +305,46 @@
         '<div class="menu">' +
         '<div class="menu-head"><div class="mh-av">DC</div><div><div class="mh-name">Dana Castellano</div><div class="mh-role">General Manager</div></div></div>' +
         '<div class="menu-sep"></div>' +
-        '<a class="menu-item" href="#">' + icon('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>') + 'Your profile</a>' +
-        '<a class="menu-item" href="#">' + icon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>') + 'Account settings</a>' +
-        '<div class="menu-item" data-acct="switch">' + icon('<path d="M3 12h18M3 6h18M3 18h18"/>') + 'Switch location</div>' +
+        '<div class="menu-item" data-href="' + PREFIX + 'profile.html">' + icon('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>') + 'Your profile</div>' +
+        '<div class="menu-item" data-href="' + PREFIX + 'settings.html">' + icon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>') + 'Account settings</div>' +
         '<div class="menu-sep"></div>' +
-        '<a class="menu-item" href="#">' + icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>') + 'Sign out</a>' +
+        '<div class="menu-item" data-acct="signout">' + icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>') + 'Sign out</div>' +
         '</div>';
     }
+
+    /* ---- Sign-out confirmation modal ----
+       Built lazily on first use, then reused. Confirming sends the user to
+       the login screen (resolved with the same PREFIX as the menu links);
+       Cancel or Escape or a backdrop click dismisses it. */
+    let signoutModal = null;
+    function openSignoutModal() {
+      if (!signoutModal) {
+        signoutModal = document.createElement("div");
+        signoutModal.className = "modal-backdrop";
+        signoutModal.innerHTML =
+          '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="signout-title">' +
+          '<div class="modal-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></div>' +
+          '<h2 id="signout-title">Sign out?</h2>' +
+          '<p>You\'ll be returned to the sign-in screen. Any unsaved changes on this page will be lost.</p>' +
+          '<div class="modal-actions">' +
+          '<button type="button" class="btn-lg" data-signout="cancel">Cancel</button>' +
+          '<button type="button" class="btn-lg primary" data-signout="confirm">Sign out</button>' +
+          '</div></div>';
+        document.body.appendChild(signoutModal);
+        signoutModal.addEventListener("click", e => {
+          const act = e.target.closest("[data-signout]");
+          if (act && act.dataset.signout === "confirm") { location.href = PREFIX + "login.html"; return; }
+          if (act && act.dataset.signout === "cancel") { closeSignoutModal(); return; }
+          if (e.target === signoutModal) closeSignoutModal(); // backdrop
+        });
+      }
+      // force reflow so the opacity/scale transition plays on first open
+      signoutModal.offsetWidth;
+      signoutModal.classList.add("open");
+      const cancel = signoutModal.querySelector('[data-signout="cancel"]');
+      if (cancel) cancel.focus();
+    }
+    function closeSignoutModal() { if (signoutModal) signoutModal.classList.remove("open"); }
 
     function syncActionsAria() {
       if (actionsBtn) actionsBtn.setAttribute("aria-expanded", actionsBtn.querySelector(".menu.open") ? "true" : "false");
@@ -332,7 +370,7 @@
       if (item) {
         e.preventDefault();
         if (item.dataset.site) { current = item.dataset.site; localStorage.setItem(SITE_KEY, current); applySite(); closeAll(); return; }
-        if (item.dataset.acct === "switch") { closeAll(); if (switcher) openMenu(switcher.querySelector(".menu")); return; }
+        if (item.dataset.acct === "signout") { closeAll(); openSignoutModal(); return; }
         if (item.dataset.href) { closeAll(); location.href = item.dataset.href; return; }
         if (item.dataset.act === "print") { closeAll(); window.print(); return; }
         closeAll(); return; // placeholder item (no wired handler)
@@ -346,7 +384,7 @@
       if (ac) { const m = actionsBtn.querySelector(".menu"); if (m) { m.classList.contains("open") ? closeAll() : openMenu(m); } return; }
       closeAll();
     });
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") { closeAll(); closeSignoutModal(); } });
     if (actionsBtn) actionsBtn.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();

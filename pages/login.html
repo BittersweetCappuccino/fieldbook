@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldbook — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <div class="login-brand">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="10" width="20" height="10" rx="1" fill="#E2932F"/>
+        <rect x="4" y="12" width="6" height="4" fill="#1F2623"/>
+        <circle cx="7" cy="21" r="2.3" fill="#1F2623" stroke="#F2EFE6" stroke-width="1"/>
+        <circle cx="18" cy="21" r="2.3" fill="#1F2623" stroke="#F2EFE6" stroke-width="1"/>
+        <rect x="16" y="7" width="5" height="6" rx="0.5" fill="#E2932F"/>
+      </svg>
+      <span class="brand-name">Fieldbook</span>
+    </div>
+
+    <div class="login-av">DC</div>
+    <div class="login-welcome">Welcome back</div>
+    <div class="login-name">Dana Castellano</div>
+    <div class="login-role">General Manager · Prairie Line Equipment</div>
+
+    <form class="login-form" id="login-form">
+      <div class="login-field">
+        <label class="form-label">Signed in as</label>
+        <div class="login-locked">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Dana Castellano
+          <span class="ll-you">You</span>
+        </div>
+      </div>
+      <div class="login-field">
+        <label class="form-label" for="pw">Password</label>
+        <input class="form-input" id="pw" type="password" value="••••••••••" autocomplete="current-password" readonly>
+      </div>
+      <button type="submit" class="login-btn">Sign Back In</button>
+    </form>
+
+    <div class="login-foot">Not you? <a href="../index.html">Use a different account</a></div>
+  </div>
+
+<script>
+  document.getElementById("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    location.href = "../index.html";
+  });
+</script>
+</body>
+</html>
