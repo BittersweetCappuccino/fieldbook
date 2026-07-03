@@ -158,66 +158,113 @@
       check:  '<path d="M20 6 9 17l-5-5"/>',
       truck:  '<rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>'
     };
-    // preset: { lead:[ico,text], groups:[[label,[[ico,text,"print"?],…]],…], danger:[ico,text] }
+    /* Shared entity metadata — the generic Actions screens (edit / status /
+       line-item / email / confirm) read this off window.FB_ENTITY_META to
+       resolve a record's department, detail page and URL param by type. */
+    const ENTITY_META = {
+      "work-order": { label: "Work Order", noun: "work order", dept: "Service", deptHref: "service.html", param: "wo", page: "work-order.html" },
+      warranty:     { label: "Warranty Claim", noun: "claim", dept: "Warranty", deptHref: "manufacturers.html", param: "wc", page: "warranty.html" },
+      rental:       { label: "Rental", noun: "rental", dept: "Rentals", deptHref: "rentals.html", param: "rn", page: "rental.html" },
+      po:           { label: "Purchase Order", noun: "purchase order", dept: "Parts", deptHref: "parts.html", param: "po", page: "po.html" },
+      part:         { label: "Part", noun: "part", dept: "Parts", deptHref: "parts.html", param: "p", page: "part.html" },
+      deal:         { label: "Deal", noun: "deal", dept: "Sales", deptHref: "sales.html", param: "d", page: "deal.html" },
+      customer:     { label: "Customer", noun: "customer", dept: "Customers", deptHref: "customers.html", param: "c", page: "customer.html" }
+    };
+    window.FB_ENTITY_META = ENTITY_META;
+
+    /* Resolve a menu item's role to a destination. Roles left off an item
+       stay placeholders (their screens live in Section B, not built yet). */
+    function actionHref(role, type, id) {
+      const q = "type=" + type + "&id=" + encodeURIComponent(id);
+      switch (role) {
+        case "edit":       return "edit.html?" + q;
+        case "status":     return "status.html?" + q;
+        case "email":      return "email.html?" + q;
+        case "add-labor":  return "line-item.html?" + q + "&kind=labor";
+        case "add-parts":  return "line-item.html?" + q + "&kind=parts";
+        case "add-charge": return "line-item.html?" + q + "&kind=charge";
+        case "add-line":   return "line-item.html?" + q + "&kind=line";
+        case "cancel": case "void": case "discontinue":
+                           return "confirm.html?" + q + "&action=" + role;
+        case "new-wo":     return "new.html?type=work-order";
+        case "new-rental": return "new.html?type=rental";
+        case "new-deal":   return "new.html?type=deal";
+        case "order-more": return "new.html?type=po&part=" + encodeURIComponent(id);
+        default:           return null;
+      }
+    }
+    window.FB_ACTION_HREF = actionHref;
+
+    // preset item: [ico, text, role?] — role → actionHref(); "print" prints;
+    // no role = placeholder (a Section B screen that isn't built yet).
     const ACTIONS_PRESETS = {
       warranty: {
         lead: ["shield", "Submit claim to manufacturer"],
         groups: [
-          ["Claim", [["labor", "Add labor line"], ["box", "Add parts"], ["status", "Update status"], ["edit", "Edit details"]]],
-          ["Share", [["print", "Print claim", "print"], ["mail", "Email to customer"]]]
+          ["Claim", [["labor", "Add labor line", "add-labor"], ["box", "Add parts", "add-parts"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
+          ["Share", [["print", "Print claim", "print"], ["mail", "Email to customer", "email"]]]
         ],
-        danger: ["cancel", "Void claim"]
+        danger: ["cancel", "Void claim", "void"]
       },
       rental: {
         lead: ["check", "Check in unit"],
         groups: [
-          ["Rental", [["plus", "Extend rental"], ["labor", "Add charge"], ["status", "Update status"], ["edit", "Edit details"]]],
-          ["Share", [["print", "Print agreement", "print"], ["mail", "Email to customer"]]]
+          ["Rental", [["plus", "Extend rental"], ["labor", "Add charge", "add-charge"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
+          ["Share", [["print", "Print agreement", "print"], ["mail", "Email to customer", "email"]]]
         ],
-        danger: ["cancel", "Cancel rental"]
+        danger: ["cancel", "Cancel rental", "cancel"]
       },
       po: {
         lead: ["truck", "Receive items"],
         groups: [
-          ["Purchase order", [["plus", "Add line item"], ["status", "Update status"], ["edit", "Edit details"]]],
-          ["Share", [["print", "Print PO", "print"], ["mail", "Email to vendor"]]]
+          ["Purchase order", [["plus", "Add line item", "add-line"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
+          ["Share", [["print", "Print PO", "print"], ["mail", "Email to vendor", "email"]]]
         ],
-        danger: ["cancel", "Cancel PO"]
+        danger: ["cancel", "Cancel PO", "cancel"]
       },
       part: {
         lead: ["box", "Adjust stock"],
         groups: [
-          ["Inventory", [["plus", "Order more"], ["truck", "Transfer stock"], ["edit", "Edit details"]]],
+          ["Inventory", [["plus", "Order more", "order-more"], ["truck", "Transfer stock"], ["edit", "Edit details", "edit"]]],
           ["Share", [["print", "Print bin label", "print"]]]
         ],
-        danger: ["cancel", "Discontinue part"]
+        danger: ["cancel", "Discontinue part", "discontinue"]
       },
       deal: {
-        lead: ["play", "Advance stage"],
+        lead: ["play", "Advance stage", "status"],
         groups: [
-          ["Deal", [["plus", "Add line item"], ["status", "Update status"], ["edit", "Edit details"]]],
-          ["Share", [["print", "Print quote", "print"], ["mail", "Email to customer"]]]
+          ["Deal", [["plus", "Add line item", "add-line"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
+          ["Share", [["print", "Print quote", "print"], ["mail", "Email to customer", "email"]]]
         ],
-        danger: ["cancel", "Cancel deal"]
+        danger: ["cancel", "Cancel deal", "cancel"]
       },
       customer: {
-        lead: ["plus", "New work order"],
+        lead: ["plus", "New work order", "new-wo"],
         groups: [
-          ["Customer", [["plus", "New rental"], ["plus", "New deal"], ["edit", "Edit details"]]],
-          ["Share", [["print", "Print statement", "print"], ["mail", "Email customer"]]]
+          ["Customer", [["plus", "New rental", "new-rental"], ["plus", "New deal", "new-deal"], ["edit", "Edit details", "edit"]]],
+          ["Share", [["print", "Print statement", "print"], ["mail", "Email customer", "email"]]]
         ]
       }
     };
 
     function buildEntityActions(btn, preset) {
-      const item = it => '<div class="menu-item"' + (it[2] === "print" ? ' data-act="print"' : "") + '>' + icon(ACT_ICON[it[0]]) + it[1] + '</div>';
+      const type = btn.dataset.actions;
+      const meta = ENTITY_META[type];
+      const id = meta ? (new URLSearchParams(location.search).get(meta.param) || "") : "";
+      const item = (it, danger) => {
+        const role = it[2];
+        let attrs = "";
+        if (role === "print") attrs = ' data-act="print"';
+        else { const h = actionHref(role, type, id); if (h) attrs = ' data-href="' + h + '"'; }
+        return '<div class="menu-item' + (danger ? " danger" : "") + '"' + attrs + '>' + icon(ACT_ICON[it[0]]) + it[1] + '</div>';
+      };
       let h = '<div class="menu wo-actions-menu">';
       if (preset.lead) h += item(preset.lead);
       (preset.groups || []).forEach(g => {
         h += '<div class="menu-sep"></div><div class="menu-label">' + g[0] + '</div>';
         g[1].forEach(it => { h += item(it); });
       });
-      if (preset.danger) h += '<div class="menu-sep"></div><div class="menu-item danger">' + icon(ACT_ICON[preset.danger[0]]) + preset.danger[1] + '</div>';
+      if (preset.danger) h += '<div class="menu-sep"></div>' + item(preset.danger, true);
       h += '</div>';
       btn.insertAdjacentHTML("beforeend", h);
     }

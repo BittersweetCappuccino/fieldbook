@@ -472,6 +472,9 @@ function buildActionsMenu(rec) {
   const mi = (ico, text, opt) => `<div class="menu-item${opt && opt.cls ? " " + opt.cls : ""}"${opt && opt.attrs ? " " + opt.attrs : ""}>${aicon(ico)}${text}</div>`;
   const sep = '<div class="menu-sep"></div>';
   const label = t => '<div class="menu-label">' + t + '</div>';
+  // wire a standard work-order action to its screen via the shared resolver
+  const woId = rec.rawId || "88213";
+  const nav = role => { const h = window.FB_ACTION_HREF && window.FB_ACTION_HREF(role, "work-order", woId); return h ? { attrs: 'data-href="' + h + '"' } : undefined; };
 
   let html = '<div class="menu wo-actions-menu">';
 
@@ -479,14 +482,14 @@ function buildActionsMenu(rec) {
   if (lead) html += mi(lead.ico, lead.text);
 
   html += sep + label("Work order");
-  html += mi(AI.labor, "Add labor line");
-  html += mi(AI.box, "Add parts");
-  html += mi(AI.status, "Update status");
-  html += mi(AI.edit, "Edit details");
+  html += mi(AI.labor, "Add labor line", nav("add-labor"));
+  html += mi(AI.box, "Add parts", nav("add-parts"));
+  html += mi(AI.status, "Update status", nav("status"));
+  html += mi(AI.edit, "Edit details", nav("edit"));
 
   html += sep + label("Share");
   html += mi(AI.print, "Print work order", { attrs: 'data-act="print"' });
-  html += mi(AI.mail, "Email to customer");
+  html += mi(AI.mail, "Email to customer", nav("email"));
 
   const w = rec.warranty;
   if (w && Array.isArray(w.lines)) {
@@ -495,7 +498,7 @@ function buildActionsMenu(rec) {
     if (m) html += sep + mi(AI.shield, "View warranty claim WC-" + m[1], { attrs: 'data-href="warranty.html?wc=' + m[1] + '"' });
   }
 
-  html += sep + mi(AI.cancel, "Cancel work order", { cls: "danger" });
+  html += sep + mi(AI.cancel, "Cancel work order", { cls: "danger", attrs: (nav("cancel") || {}).attrs });
 
   html += '</div>';
   btn.insertAdjacentHTML("beforeend", html);
@@ -579,7 +582,8 @@ function render(rec) {
   const params = new URLSearchParams(location.search);
   const id = params.get("wo") || "88213";
   const rec = RECORDS[id] || RECORDS["88213"];
-  rec.id = "WO-" + (RECORDS[id] ? id : "88213");
+  rec.rawId = RECORDS[id] ? id : "88213";
+  rec.id = "WO-" + rec.rawId;
   render(rec);
   buildActionsMenu(rec);
   document.title = "Fieldbook — " + rec.id;
