@@ -562,6 +562,26 @@ a.bay-card.occupied:hover { border-color: var(--slate-light); box-shadow: 0 3px 
   .cap-fresh { display: none; }
 }
 
+/* ------------------------------------------------------------
+   Pressure-test callout — a charcoal slab (echoing the case-study
+   doc-head, amber spine and all) that surfaces the pressure-test
+   addendum from inside the app.
+   ------------------------------------------------------------ */
+.pt-callout { position: relative; overflow: hidden; background: var(--charcoal); color: var(--cream-text); border-radius: 4px; padding: 22px 26px; margin: 24px 0 30px; }
+.pt-callout::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
+.pt-kicker { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+.pt-callout h2 { font-family: 'Oswald', sans-serif; font-size: 21px; font-weight: 600; line-height: 1.15; margin: 6px 0 0; }
+.pt-callout p { font-size: 13px; line-height: 1.6; color: var(--slate-light); margin: 8px 0 0; }
+.pt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.pt-read { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; padding: 9px 15px; border-radius: 3px; background: var(--amber); color: var(--charcoal); text-decoration: none; flex-shrink: 0; }
+.pt-read:hover { background: #EDA548; }
+
+@media (max-width: 600px) {
+  .pt-callout { padding: 20px; }
+  .pt-actions { flex-direction: column; align-items: stretch; }
+  .pt-read { justify-content: center; }
+}
+
 /* ============================================================
    TECHNICIAN BAY (mobile)
    A single-column, glove-friendly view scoped to one tech at one

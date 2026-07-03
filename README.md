@@ -38,7 +38,7 @@ That's the insight the concept is built around: a DMS replacing a paper system t
 
 ## Associated work
 
-- **[Pressure Test: Fieldbook's Sync Feed vs. a Real OEM API](docs/pressure-test.html)** — an addendum that stress-tests the manufacturer sync feed against John Deere's public developer documentation, and what each constraint changes in the product.
+- **[Pressure Test: Fieldbook's Sync Feed vs. a Real OEM API](https://bittersweetcappuccino.github.io/fieldbook/docs/pressure-test.html)** — an addendum that stress-tests the manufacturer sync feed against John Deere's public developer documentation, and what each constraint changes in the product.
 
 ---
 
