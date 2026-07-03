@@ -85,7 +85,7 @@ const BAY_JOBS = {
 };
 
 /* ---------- state ---------- */
-let job, ops, current, clockedIn, sessionStart;
+let job, ops, current, clockedIn, sessionStart, completed;
 let shiftBase = 3 * H + 41 * M; // ~3h41m into the shift
 
 function loadJob(id) {
@@ -96,6 +96,7 @@ function loadJob(id) {
   if (current < 0) current = ops.findIndex(o => o.state === "pending");
   clockedIn = current >= 0 && ops[current].state === "active";
   sessionStart = clockedIn ? Date.now() : null;
+  completed = false;
 }
 
 /* ---------- time formatting ---------- */
@@ -198,12 +199,14 @@ function render() {
     ? job.parts.map(p => `<div class="bpart"><div class="pn">${p.pn}</div><div class="pd">${p.pd}</div><div class="ps ${p.st}">${p.stl}</div></div>`).join("")
     : `<div class="bpart"><div class="pd" style="color:var(--slate-light);font-style:italic">No parts on this job yet.</div></div>`;
 
+  const stamp = completed ? { cls: "qc", label: "In Quality Check" } : job.stamp;
+
   document.getElementById("scroll").innerHTML = `
     ${queueHTML()}
     <div class="bay-hero ${job.dept === "overdue" ? "dept-overdue" : ""}">
       <div class="hero-top">
         <div><div class="wo">${job.wo} · ${job.model}</div><div class="unit">${job.unit}</div></div>
-        <div class="stamp ${job.stamp.cls}">${job.stamp.label}</div>
+        <div class="stamp ${stamp.cls}">${stamp.label}</div>
       </div>
       <div class="bay-complaint"><span class="lbl">Complaint</span>${job.complaint}</div>
     </div>
@@ -231,7 +234,10 @@ function renderBottom() {
   const remaining = ops.filter(o => o.state !== "done");
   const blocked = ops.find(o => o.state === "blocked");
   let html;
-  if (remaining.length === 0) {
+  if (completed) {
+    html = `<div class="complete-btn done">${svg.check}&nbsp; Sent to Quality Check</div>
+      <div class="bay-hint done">QC will inspect this job — nothing more to do in the bay.</div>`;
+  } else if (remaining.length === 0) {
     html = `<button class="complete-btn" onclick="completeJob()">Complete Job → QC</button>`;
   } else if (blocked && remaining.every(o => o.state === "blocked")) {
     html = `<button class="complete-btn blocked" onclick="toast('Blocked: ${blocked.block}')">Blocked — can't complete</button>
@@ -282,7 +288,10 @@ function completeOp() {
 }
 
 function completeJob() {
+  if (completed) return;
+  completed = true;
   toast("Job completed — sent to Quality Check");
+  render();
 }
 
 /* ---------- toast ---------- */
