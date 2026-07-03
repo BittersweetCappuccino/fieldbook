@@ -42,4 +42,4 @@ That's the insight the concept is built around: a DMS replacing a paper system t
 
 ---
 
-*Built as a product/UI concept exercise, not built for or affiliated with any specific company. Tech: hand-coded HTML/CSS/JavaScript.*
+*Built as a product/UI concept exercise, not built for or affiliated with any specific company. Tech: HTML/CSS/JavaScript/Claude Code.*
