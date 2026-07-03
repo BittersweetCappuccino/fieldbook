@@ -326,7 +326,7 @@
         closeAll(); return; // placeholder item (no wired handler)
       }
       if (e.target.closest(".menu")) return; // clicks on menu chrome keep it open
-      const sw = switcher && e.target.closest(".site-switcher");
+      const sw = switcher && switcher.contains(e.target); // topbar switcher only — not other .site-switcher pills (e.g. Reporting's period selector)
       if (sw) { const m = switcher.querySelector(".menu"); m.classList.contains("open") ? closeAll() : openMenu(m); return; }
       const av = avatar && e.target.closest(".avatar");
       if (av) { const m = avatar.querySelector(".menu"); m.classList.contains("open") ? closeAll() : openMenu(m); return; }
