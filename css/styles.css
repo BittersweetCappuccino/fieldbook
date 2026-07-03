@@ -128,6 +128,9 @@ a { color: inherit; text-decoration: none; }
 .topbar-left .date-line { font-size: 12px; color: var(--slate); margin-top: 2px; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
 .site-switcher { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 500; background: var(--paper-2); border: 1px solid var(--paper-line); padding: 7px 12px; border-radius: 3px; color: var(--ink); cursor: pointer; }
+/* Reporting period picker — same pill look as the switcher but a distinct class,
+   so it never shares the topbar switcher's click handling. */
+.period-picker { position: relative; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 500; background: var(--paper-2); border: 1px solid var(--paper-line); padding: 7px 12px; border-radius: 3px; color: var(--ink); cursor: pointer; user-select: none; }
 .avatar { width: 30px; height: 30px; border-radius: 3px; background: var(--steel-blue); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; }
 .btn { font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: 2px; cursor: pointer; border: 1px solid var(--paper-line); background: white; color: var(--ink); letter-spacing: 0.02em; }
 .btn.primary { background: var(--charcoal); color: var(--cream-text); border-color: var(--charcoal); }
