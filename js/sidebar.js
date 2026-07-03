@@ -137,6 +137,95 @@
 
     function icon(p) { return '<span class="mi-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + p + '</svg></span>'; }
 
+    /* ---- contextual Actions menu for the simple entity pages ----
+       The work order screen builds its own record-aware menu in
+       work-order.js; the warranty / rental / PO / part / deal / customer
+       pages instead tag their .actions-btn with data-actions=<preset> and
+       we assemble a matching menu here so the dropdown opens everywhere the
+       button appears. Items are placeholders (they just close) except
+       data-act="print", handled by the shared menu-item click handler. */
+    const ACT_ICON = {
+      play:   '<polygon points="5 3 19 12 5 21 5 3"/>',
+      labor:  '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+      box:    '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>',
+      status: '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/>',
+      edit:   '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+      print:  '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+      mail:   '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+      shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      cancel: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>',
+      plus:   '<path d="M12 5v14M5 12h14"/>',
+      check:  '<path d="M20 6 9 17l-5-5"/>',
+      truck:  '<rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>'
+    };
+    // preset: { lead:[ico,text], groups:[[label,[[ico,text,"print"?],…]],…], danger:[ico,text] }
+    const ACTIONS_PRESETS = {
+      warranty: {
+        lead: ["shield", "Submit claim to manufacturer"],
+        groups: [
+          ["Claim", [["labor", "Add labor line"], ["box", "Add parts"], ["status", "Update status"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print claim", "print"], ["mail", "Email to customer"]]]
+        ],
+        danger: ["cancel", "Void claim"]
+      },
+      rental: {
+        lead: ["check", "Check in unit"],
+        groups: [
+          ["Rental", [["plus", "Extend rental"], ["labor", "Add charge"], ["status", "Update status"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print agreement", "print"], ["mail", "Email to customer"]]]
+        ],
+        danger: ["cancel", "Cancel rental"]
+      },
+      po: {
+        lead: ["truck", "Receive items"],
+        groups: [
+          ["Purchase order", [["plus", "Add line item"], ["status", "Update status"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print PO", "print"], ["mail", "Email to vendor"]]]
+        ],
+        danger: ["cancel", "Cancel PO"]
+      },
+      part: {
+        lead: ["box", "Adjust stock"],
+        groups: [
+          ["Inventory", [["plus", "Order more"], ["truck", "Transfer stock"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print bin label", "print"]]]
+        ],
+        danger: ["cancel", "Discontinue part"]
+      },
+      deal: {
+        lead: ["play", "Advance stage"],
+        groups: [
+          ["Deal", [["plus", "Add line item"], ["status", "Update status"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print quote", "print"], ["mail", "Email to customer"]]]
+        ],
+        danger: ["cancel", "Cancel deal"]
+      },
+      customer: {
+        lead: ["plus", "New work order"],
+        groups: [
+          ["Customer", [["plus", "New rental"], ["plus", "New deal"], ["edit", "Edit details"]]],
+          ["Share", [["print", "Print statement", "print"], ["mail", "Email customer"]]]
+        ]
+      }
+    };
+
+    function buildEntityActions(btn, preset) {
+      const item = it => '<div class="menu-item"' + (it[2] === "print" ? ' data-act="print"' : "") + '>' + icon(ACT_ICON[it[0]]) + it[1] + '</div>';
+      let h = '<div class="menu wo-actions-menu">';
+      if (preset.lead) h += item(preset.lead);
+      (preset.groups || []).forEach(g => {
+        h += '<div class="menu-sep"></div><div class="menu-label">' + g[0] + '</div>';
+        g[1].forEach(it => { h += item(it); });
+      });
+      if (preset.danger) h += '<div class="menu-sep"></div><div class="menu-item danger">' + icon(ACT_ICON[preset.danger[0]]) + preset.danger[1] + '</div>';
+      h += '</div>';
+      btn.insertAdjacentHTML("beforeend", h);
+    }
+
+    if (actionsBtn && actionsBtn.dataset.actions && ACTIONS_PRESETS[actionsBtn.dataset.actions] && !actionsBtn.querySelector(".menu")) {
+      buildEntityActions(actionsBtn, ACTIONS_PRESETS[actionsBtn.dataset.actions]);
+    }
+
     function renderSwitcher() {
       if (!switcher) return;
       switcher.innerHTML =
@@ -160,11 +249,14 @@
         '</div>';
     }
 
-    function closeAll(except) {
-      topbarEl.querySelectorAll(".menu.open").forEach(m => { if (m !== except) m.classList.remove("open"); });
+    function syncActionsAria() {
       if (actionsBtn) actionsBtn.setAttribute("aria-expanded", actionsBtn.querySelector(".menu.open") ? "true" : "false");
     }
-    function openMenu(m) { closeAll(m); if (m) m.classList.add("open"); }
+    function closeAll(except) {
+      topbarEl.querySelectorAll(".menu.open").forEach(m => { if (m !== except) m.classList.remove("open"); });
+      syncActionsAria();
+    }
+    function openMenu(m) { closeAll(m); if (m) m.classList.add("open"); syncActionsAria(); }
 
     function applySite() {
       renderSwitcher();
