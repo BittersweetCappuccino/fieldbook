@@ -458,11 +458,11 @@ function aicon(p) { return '<span class="mi-ico"><svg width="15" height="15" vie
 
 // contextual lead action, keyed by lifecycle stamp
 const LEAD_ACTION = {
-  progress:  { ico: AI.qc,      text: "Mark ready for QC" },
-  waiting:   { ico: AI.box,     text: "Update parts ETA" },
-  ready:     { ico: AI.invoice, text: "Generate invoice" },
-  overdue:   { ico: AI.tech,    text: "Assign technician" },
-  scheduled: { ico: AI.play,    text: "Start job" }
+  progress:  { ico: AI.qc,      text: "Mark ready for QC", role: "qc" },
+  waiting:   { ico: AI.box,     text: "Update parts ETA",  role: "parts-eta" },
+  ready:     { ico: AI.invoice, text: "Generate invoice",  role: "invoice" },
+  overdue:   { ico: AI.tech,    text: "Assign technician", role: "assign" },
+  scheduled: { ico: AI.play,    text: "Start job",         role: "start-job" }
 };
 
 function buildActionsMenu(rec) {
@@ -479,7 +479,7 @@ function buildActionsMenu(rec) {
   let html = '<div class="menu wo-actions-menu">';
 
   const lead = LEAD_ACTION[rec.stamp.cls];
-  if (lead) html += mi(lead.ico, lead.text);
+  if (lead) html += mi(lead.ico, lead.text, nav(lead.role));
 
   html += sep + label("Work order");
   html += mi(AI.labor, "Add labor line", nav("add-labor"));

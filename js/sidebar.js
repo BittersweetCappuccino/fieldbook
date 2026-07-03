@@ -190,6 +190,18 @@
         case "new-rental": return "new.html?type=rental";
         case "new-deal":   return "new.html?type=deal";
         case "order-more": return "new.html?type=po&part=" + encodeURIComponent(id);
+        // Section B — workflow-specific screens (workflow.js)
+        case "qc":            return "qc.html?" + q;
+        case "parts-eta":     return "parts-eta.html?" + q;
+        case "assign":        return "assign.html?" + q;
+        case "invoice":       return "invoice.html?" + q;
+        case "submit-claim":  return "claim-submit.html?" + q;
+        case "checkin":       return "checkin.html?" + q;
+        case "extend":        return "extend.html?" + q;
+        case "receive":       return "receive.html?" + q;
+        case "adjust-stock":  return "adjust-stock.html?" + q;
+        case "transfer-stock":return "transfer-stock.html?" + q;
+        case "start-job":     return "bay.html?wo=" + encodeURIComponent(id);
         default:           return null;
       }
     }
@@ -199,7 +211,7 @@
     // no role = placeholder (a Section B screen that isn't built yet).
     const ACTIONS_PRESETS = {
       warranty: {
-        lead: ["shield", "Submit claim to manufacturer"],
+        lead: ["shield", "Submit claim to manufacturer", "submit-claim"],
         groups: [
           ["Claim", [["labor", "Add labor line", "add-labor"], ["box", "Add parts", "add-parts"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
           ["Share", [["print", "Print claim", "print"], ["mail", "Email to customer", "email"]]]
@@ -207,15 +219,15 @@
         danger: ["cancel", "Void claim", "void"]
       },
       rental: {
-        lead: ["check", "Check in unit"],
+        lead: ["check", "Check in unit", "checkin"],
         groups: [
-          ["Rental", [["plus", "Extend rental"], ["labor", "Add charge", "add-charge"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
+          ["Rental", [["plus", "Extend rental", "extend"], ["labor", "Add charge", "add-charge"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
           ["Share", [["print", "Print agreement", "print"], ["mail", "Email to customer", "email"]]]
         ],
         danger: ["cancel", "Cancel rental", "cancel"]
       },
       po: {
-        lead: ["truck", "Receive items"],
+        lead: ["truck", "Receive items", "receive"],
         groups: [
           ["Purchase order", [["plus", "Add line item", "add-line"], ["status", "Update status", "status"], ["edit", "Edit details", "edit"]]],
           ["Share", [["print", "Print PO", "print"], ["mail", "Email to vendor", "email"]]]
@@ -223,9 +235,9 @@
         danger: ["cancel", "Cancel PO", "cancel"]
       },
       part: {
-        lead: ["box", "Adjust stock"],
+        lead: ["box", "Adjust stock", "adjust-stock"],
         groups: [
-          ["Inventory", [["plus", "Order more", "order-more"], ["truck", "Transfer stock"], ["edit", "Edit details", "edit"]]],
+          ["Inventory", [["plus", "Order more", "order-more"], ["truck", "Transfer stock", "transfer-stock"], ["edit", "Edit details", "edit"]]],
           ["Share", [["print", "Print bin label", "print"]]]
         ],
         danger: ["cancel", "Discontinue part", "discontinue"]
