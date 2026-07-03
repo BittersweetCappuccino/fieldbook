@@ -1,5 +1,7 @@
 # Fieldbook — A Dealer Management System Concept
 
+![Fieldbook — the operational core of an equipment dealership](assets/og-image.png)
+
 **A product concept exploring the operational core of an equipment dealership: service, parts, rentals, sales, and manufacturer integrations in one system.**
 
 **View the interactive mockup →** https://bittersweetcappuccino.github.io/fieldbook/
