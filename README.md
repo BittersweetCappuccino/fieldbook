@@ -36,7 +36,18 @@ That's the insight the concept is built around: a DMS replacing a paper system t
 - **Overdue states use both color and a stamp label, never color alone**, since this is a screen used in bright shop-floor lighting and glanced at, not read closely — redundant signaling matters more here than in a typical office SaaS product.
 - **The manufacturer feed is transactional, not a notification dump.** Each line is an event with a business consequence (credit posted, shipment ETA, claim flagged), because in this world, a stalled manufacturer sync directly blocks a technician's ability to close a job.
 
----
+## Sneak peek: the bay view — one screen that isn't a desktop board
+
+Fieldbook is mostly a manager's desktop board. One screen deliberately isn't. From any work order, an **Open bay view** button opens the *same job* rendered as a glove-friendly, single-column layout sized for a tablet propped at the bay — the screen a **technician** actually works from. It's the product's one responsive role-switch: same data, a different job to do.
+
+![Open bay view opens the same work order as a technician's tablet screen — the responsive handoff from the manager's desktop board to the shop floor](assets/bay-view-handoff.svg)
+
+Why give the technician a separate view instead of the same page? A service manager *reads* a board — many jobs, dense data, glanced at from across the shop. A technician *acts on one job* with greasy gloves. So the bay view strips everything down to what the tech does next, with the labor clock as its center of gravity:
+
+![Annotated bay view: one tech / one bay scope, a live labor clock, one-tap quick actions, an operation checklist, and a Complete Job → QC handoff](assets/bay-view-annotated.svg)
+
+The bay view is also self-sufficient — the technician's own job queue lives in its app bar, so the device never depends on the manager's dashboard — and it closes the loop back to the manager: **Complete Job → QC** returns the finished job into the same service flow the board shows.
+
 
 ## Associated work
 
