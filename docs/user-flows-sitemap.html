@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen Map — Fieldbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<style>
+  /* ============================================================
+     SCREEN MAP
+     A low-fidelity wireframe sitemap: a top-down tree of
+     screen thumbnails joined by elbow connectors, with black branch
+     pills at the decision splits. Grounded in Fieldbook with a thin
+     department-color stripe per screen and the Oswald label face.
+     Reuses the shared tokens and the .doc-head charcoal slab.
+     ============================================================ */
+  body.page-doc { background: var(--paper);
+    --wire-line: #7C7768;
+    --w-card: #FCFAF5; --w-border: #D8D1C1; --w-fill: #E2DBCB; --w-fill-2: #ECE7DB;
+  }
+  .doc { max-width: 1120px; margin: 0 auto; padding: 0 24px 80px; }
+  .doc-topnav { max-width: 1120px; margin: 0 auto; padding: 20px 24px 0; }
+  .doc-back { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: var(--slate); text-decoration: none; }
+  .doc-back:hover { color: var(--ink); }
+  .doc-back svg { transition: transform 0.12s ease; }
+  .doc-back:hover svg { transform: translateX(-2px); }
+
+  .doc-head { background: var(--charcoal); color: var(--cream-text); border-radius: 4px; padding: 30px 32px; position: relative; overflow: hidden; margin: 16px 0 26px; }
+  .doc-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
+  .doc-kicker { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+  .doc-head h1 { font-family: 'Oswald', sans-serif; font-size: 34px; font-weight: 600; line-height: 1.1; letter-spacing: 0.01em; margin: 8px 0 0; }
+  .doc-lede { font-size: 14.5px; line-height: 1.65; color: var(--slate-light); margin-top: 14px; }
+  .doc-lede b { color: var(--cream-text); font-weight: 500; }
+
+  /* ---------- legend ---------- */
+  .m-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 4px; }
+  .m-legend .kt { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate); }
+  .m-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink); }
+  .m-chip i { width: 22px; height: 8px; border-radius: 2px; display: inline-block; }
+  .m-howto { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--paper-line); font-size: 12px; color: var(--slate); align-items: center; }
+  .m-howto .g { display: inline-flex; align-items: center; gap: 8px; }
+  .m-howto .ln { width: 30px; height: 2px; background: var(--wire-line); display: inline-block; }
+  .m-howto .ln.dash { background: none; background-image: repeating-linear-gradient(to right, var(--wire-line) 0, var(--wire-line) 4px, transparent 4px, transparent 8px); }
+  .m-howto .pill { background: var(--ink); color: #fff; font-family: 'Oswald', sans-serif; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
+
+  /* ---------- zoom toolbar ---------- */
+  .m-zoombar { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin: 18px 0 8px; }
+  .m-zoombar button { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--ink); background: #fff; border: 1px solid var(--paper-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; line-height: 1; }
+  .m-zoombar button:hover { border-color: var(--slate-light); }
+  .m-zoombar button:active { background: var(--paper-2); }
+  .m-zoombar .zicon { width: 30px; padding: 6px 0; font-size: 15px; }
+  .m-zoombar .zlevel { min-width: 46px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--slate); }
+  .m-zoombar .sep { width: 1px; align-self: stretch; background: var(--paper-line); margin: 2px 4px; }
+
+  /* ---------- map canvas ---------- */
+  .m-map { overflow: auto; -webkit-overflow-scrolling: touch; max-height: 80vh; padding: 12px 0 18px; border: 1px solid var(--paper-line); border-radius: 4px; background: var(--paper-2); background-image: linear-gradient(rgba(33,29,23,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(33,29,23,0.045) 1px, transparent 1px); background-size: 24px 24px; text-align: center; cursor: grab; }
+  .m-map.grabbing { cursor: grabbing; }
+  .m-map { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
+  .m-zoomwrap { display: inline-block; overflow: hidden; vertical-align: top; }
+  .m-tree { display: inline-block; padding: 24px 34px 30px; box-sizing: border-box; text-align: left; transform-origin: top left; will-change: transform; }
+
+  .m-tree ul { display: flex; justify-content: center; padding-top: 20px; position: relative; margin: 0; list-style: none; }
+  .m-tree > ul { padding-top: 0; }
+  .m-tree li { list-style: none; margin: 0; position: relative; padding: 20px 9px 0; display: flex; flex-direction: column; align-items: center; }
+  /* elbow connectors from each child up to its parent's horizontal bus */
+  .m-tree li::before, .m-tree li::after { content: ''; position: absolute; top: 0; width: 50%; height: 20px; border-top: 2px solid var(--wire-line); }
+  .m-tree li::before { right: 50%; }
+  .m-tree li::after { left: 50%; border-left: 2px solid var(--wire-line); }
+  .m-tree li:only-child { padding-top: 20px; }
+  .m-tree li:only-child::before, .m-tree li:only-child::after { display: none; }
+  .m-tree li:first-child::before, .m-tree li:last-child::after { border: 0 none; }
+  .m-tree li:last-child::before { border-right: 2px solid var(--wire-line); border-radius: 0 7px 0 0; }
+  .m-tree li:first-child::after { border-radius: 7px 0 0 0; }
+  /* vertical drop from a parent node into its children's bus */
+  .m-tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; margin-left: -1px; width: 0; height: 20px; border-left: 2px solid var(--wire-line); }
+  /* conditional / optional edge */
+  .m-tree li.cond::before, .m-tree li.cond::after { border-color: var(--slate-light); border-top-style: dashed; }
+  .m-tree li.cond::after { border-left-style: dashed; }
+
+  /* branch pill sitting on a connector */
+  .m-pill { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); z-index: 3; background: var(--ink); color: #fff; font-family: 'Oswald', sans-serif; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+
+  /* ---------- node ---------- */
+  .m-node { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .m-node[data-dept="service"] { --dept: var(--amber); }
+  .m-node[data-dept="parts"]   { --dept: var(--field-green); }
+  .m-node[data-dept="rentals"] { --dept: var(--steel-blue); }
+  .m-node[data-dept="sales"]   { --dept: var(--clay); }
+  .m-node[data-dept="oem"]     { --dept: var(--amber-deep); }
+  .m-node[data-dept="sys"]     { --dept: var(--slate); }
+  .m-lab { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; font-size: 11px; color: var(--ink); text-align: center; line-height: 1.12; max-width: 124px; min-height: 25px; display: flex; align-items: flex-end; justify-content: center; }
+  .m-file { font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: var(--slate-light); white-space: nowrap; }
+
+  /* ---------- wireframe thumbnail ---------- */
+  .m-wire { position: relative; width: 112px; background: var(--w-card); border: 1px solid var(--w-border); border-radius: 4px; padding: 9px 7px 7px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 1px 2px rgba(31,38,35,0.06); overflow: hidden; }
+  .m-wire::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--dept); opacity: 0.92; }
+  .m-wire .wh { height: 8px; border-radius: 2px; background: var(--w-fill-2); }
+  .m-wire .wbar { background: var(--w-fill); border-radius: 2px; height: 10px; }
+  .m-wire .wbar.logo { width: 34px; height: 20px; margin: 2px auto 0; }
+  .m-wire .wlines { border-radius: 1px; background-image: repeating-linear-gradient(to bottom, var(--w-fill) 0, var(--w-fill) 3px, transparent 3px, transparent 8px); }
+  .m-wire .wlines.sm { height: 13px; } .m-wire .wlines.md { height: 23px; }
+  .m-wire .wgrid { display: flex; gap: 4px; }
+  .m-wire .wgrid i { flex: 1; height: 18px; background: var(--w-fill); border-radius: 2px; }
+  .m-wire .wstats { display: flex; gap: 4px; }
+  .m-wire .wstats i { flex: 1; height: 15px; background: var(--w-fill-2); border: 1px solid var(--w-border); border-radius: 2px; }
+  .m-wire .wlist { display: flex; flex-direction: column; gap: 5px; }
+  .m-wire .wrow { display: flex; gap: 5px; align-items: center; }
+  .m-wire .wrow b { flex: 1; height: 8px; background: var(--w-fill); border-radius: 2px; display: block; }
+  .m-wire .wrow i { width: 15px; height: 15px; background: var(--w-fill-2); border: 1px solid var(--w-border); border-radius: 2px; flex: none; }
+  .m-wire .wrow i.av { border-radius: 50%; }
+  .m-wire .wform { display: flex; flex-direction: column; gap: 5px; }
+  .m-wire .wf { display: flex; flex-direction: column; gap: 2px; }
+  .m-wire .wf span { display: block; width: 42%; height: 3px; background: var(--w-fill); border-radius: 2px; }
+  .m-wire .wf b { display: block; height: 9px; background: var(--w-card); border: 1px solid var(--w-border); border-radius: 2px; }
+  .m-wire .wbtn { height: 11px; width: 40px; border-radius: 6px; background: var(--slate); }
+  .m-wire .wbtn.wide { width: 100%; }
+  .m-wire .wtitle { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+  .m-wire .wtitle b { display: block; width: 56%; height: 9px; background: var(--w-fill); border-radius: 2px; }
+  .m-wire .wstamp { display: block; width: 26px; height: 11px; border: 1.5px solid var(--dept); border-radius: 2px; transform: rotate(-6deg); opacity: 0.85; flex: none; }
+  .m-wire .pad { display: flex; flex-direction: column; gap: 6px; padding: 3px 4px 2px; align-items: center; width: 100%; }
+  .m-wire .pad .wform { width: 100%; }
+  .m-wire .wtable { height: 26px; border: 1px solid var(--w-border); border-radius: 2px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 7px, var(--w-border) 7px, var(--w-border) 8px); }
+
+  /* method note */
+  .note-card { background: rgba(74,108,122,0.06); border: 1px solid var(--paper-line); border-left: 3px solid var(--steel-blue); border-radius: 3px; padding: 18px 20px; margin-top: 40px; }
+  .note-card h2 { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 10px; }
+  .note-card p { font-size: 13px; line-height: 1.6; color: var(--ink); margin: 0; }
+  .note-card p + p { margin-top: 10px; }
+  .note-card a { color: var(--steel-blue-deep); border-bottom: 1px solid var(--paper-line); text-decoration: none; }
+  .note-card a:hover { border-bottom-color: var(--steel-blue); }
+  .note-card .mono { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--steel-blue-deep); }
+
+  @media (max-width: 600px) {
+    .doc, .doc-topnav { padding-left: 16px; padding-right: 16px; }
+    .doc-head { padding: 24px 22px; }
+    .doc-head h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body class="page-doc">
+
+<nav class="doc-topnav">
+  <a class="doc-back" href="../index.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back to the interactive mockup
+  </a>
+</nav>
+
+<article class="doc">
+
+  <header class="doc-head">
+    <div class="doc-kicker">Case Study · Screen Map</div>
+    <h1>Fieldbook — Screen Map</h1>
+    <p class="doc-lede">The same product as a low-fidelity <b>sitemap</b>: every screen in the mockup as a wireframe thumbnail, arranged in the hierarchy a user actually descends — sign in, land on the board, drill into a department, open a record, run a workflow. A thin stripe carries each screen's department color; a dashed edge marks a conditional step.</p>
+  </header>
+
+  <div class="m-legend">
+    <span class="kt">Departments</span>
+    <span class="m-chip"><i style="background:var(--slate)"></i>Access</span>
+    <span class="m-chip"><i style="background:var(--amber)"></i>Service</span>
+    <span class="m-chip"><i style="background:var(--field-green)"></i>Parts</span>
+    <span class="m-chip"><i style="background:var(--steel-blue)"></i>Rentals</span>
+    <span class="m-chip"><i style="background:var(--clay)"></i>Sales</span>
+    <span class="m-chip"><i style="background:var(--amber-deep)"></i>Manufacturer</span>
+  </div>
+  <div class="m-howto">
+    <span class="g"><span class="ln"></span>navigation</span>
+    <span class="g"><span class="ln dash"></span>conditional / optional screen</span>
+    <span class="g"><span class="pill">Branch</span>a decision split</span>
+    <span class="g">scroll the map sideways to follow a branch →</span>
+  </div>
+
+  <div class="m-zoombar">
+    <button type="button" class="zicon" data-zoom="out" aria-label="Zoom out">&minus;</button>
+    <span class="zlevel" id="zlevel">100%</span>
+    <button type="button" class="zicon" data-zoom="in" aria-label="Zoom in">+</button>
+    <span class="sep"></span>
+    <button type="button" data-zoom="reset">100%</button>
+    <button type="button" data-zoom="fit">Fit</button>
+  </div>
+
+  <div class="m-map">
+    <div class="m-zoomwrap">
+    <div class="m-tree">
+      <ul>
+        <li>
+          <div class="m-node" data-dept="sys" data-tpl="auth" data-label="Login" data-file="login.html"></div>
+          <ul>
+            <li>
+              <span class="m-pill">Sign in</span>
+              <div class="m-node" data-dept="sys" data-tpl="dash" data-label="Today's Board" data-file="index.html"></div>
+              <ul>
+                <!-- SERVICE -->
+                <li>
+                  <div class="m-node" data-dept="service" data-tpl="list" data-label="Service" data-file="service.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="service" data-tpl="detail" data-label="Work Order" data-file="work-order.html"></div>
+                    <ul>
+                      <li><div class="m-node" data-dept="service" data-tpl="form" data-label="Assign Tech" data-file="assign.html"></div></li>
+                      <li><div class="m-node" data-dept="service" data-tpl="detail" data-label="Active Bay" data-file="bay.html"></div></li>
+                      <li class="cond"><div class="m-node" data-dept="parts" data-tpl="form" data-label="Parts ETA" data-file="parts-eta.html"></div></li>
+                      <li><div class="m-node" data-dept="service" data-tpl="form" data-label="QC Checklist" data-file="qc.html"></div></li>
+                      <li><div class="m-node" data-dept="service" data-tpl="doc" data-label="Invoice" data-file="invoice.html"></div></li>
+                      <li><div class="m-node" data-dept="service" data-tpl="form" data-label="Email" data-file="email.html"></div></li>
+                    </ul>
+                  </li></ul>
+                </li>
+                <!-- PARTS -->
+                <li>
+                  <div class="m-node" data-dept="parts" data-tpl="list" data-label="Parts" data-file="parts.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="parts" data-tpl="detail" data-label="Part" data-file="part.html"></div>
+                    <ul>
+                      <li class="cond"><div class="m-node" data-dept="parts" data-tpl="form" data-label="Adjust Stock" data-file="adjust-stock.html"></div></li>
+                      <li>
+                        <div class="m-node" data-dept="parts" data-tpl="form" data-label="New PO" data-file="new.html?type=po"></div>
+                        <ul><li>
+                          <div class="m-node" data-dept="parts" data-tpl="detail" data-label="Purchase Order" data-file="po.html"></div>
+                          <ul><li><div class="m-node" data-dept="parts" data-tpl="form" data-label="Receive" data-file="receive.html"></div></li></ul>
+                        </li></ul>
+                      </li>
+                    </ul>
+                  </li></ul>
+                </li>
+                <!-- RENTALS -->
+                <li>
+                  <div class="m-node" data-dept="rentals" data-tpl="list" data-label="Rentals" data-file="rentals.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="rentals" data-tpl="detail" data-label="Rental" data-file="rental.html"></div>
+                    <ul>
+                      <li class="cond"><div class="m-node" data-dept="rentals" data-tpl="form" data-label="Extend" data-file="extend.html"></div></li>
+                      <li><div class="m-node" data-dept="rentals" data-tpl="form" data-label="Return Inspection" data-file="checkin.html"></div></li>
+                    </ul>
+                  </li></ul>
+                </li>
+                <!-- SALES -->
+                <li>
+                  <div class="m-node" data-dept="sales" data-tpl="list" data-label="Sales" data-file="sales.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="sales" data-tpl="detail" data-label="Deal" data-file="deal.html"></div>
+                    <ul>
+                      <li><div class="m-node" data-dept="sales" data-tpl="form" data-label="Update Stage" data-file="status.html"></div></li>
+                      <li><div class="m-node" data-dept="sales" data-tpl="form" data-label="Add Line Item" data-file="line-item.html"></div></li>
+                      <li><div class="m-node" data-dept="sales" data-tpl="form" data-label="Email Quote" data-file="email.html"></div></li>
+                    </ul>
+                  </li></ul>
+                </li>
+                <!-- MANUFACTURERS -->
+                <li>
+                  <div class="m-node" data-dept="oem" data-tpl="feed" data-label="Manufacturers" data-file="manufacturers.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="oem" data-tpl="detail" data-label="Warranty Claim" data-file="warranty.html"></div>
+                    <ul><li><div class="m-node" data-dept="oem" data-tpl="form" data-label="Submit to OEM" data-file="claim-submit.html"></div></li></ul>
+                  </li></ul>
+                </li>
+                <!-- CUSTOMERS -->
+                <li>
+                  <div class="m-node" data-dept="sys" data-tpl="list" data-label="Customers" data-file="customers.html"></div>
+                  <ul><li>
+                    <div class="m-node" data-dept="sys" data-tpl="detail" data-label="Customer" data-file="customer.html"></div>
+                    <ul>
+                      <li><div class="m-node" data-dept="service" data-tpl="form" data-label="New Work Order" data-file="new.html?type=work-order"></div></li>
+                      <li><div class="m-node" data-dept="rentals" data-tpl="form" data-label="New Rental" data-file="new.html?type=rental"></div></li>
+                      <li><div class="m-node" data-dept="sales" data-tpl="form" data-label="New Deal" data-file="new.html?type=deal"></div></li>
+                    </ul>
+                  </li></ul>
+                </li>
+                <!-- REPORTING -->
+                <li><div class="m-node" data-dept="sys" data-tpl="dash" data-label="Reporting" data-file="reporting.html"></div></li>
+                <!-- PROFILE -->
+                <li><div class="m-node" data-dept="sys" data-tpl="detail" data-label="Your Profile" data-file="profile.html"></div></li>
+                <!-- SETTINGS -->
+                <li><div class="m-node" data-dept="sys" data-tpl="form" data-label="Settings" data-file="settings.html"></div></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </div>
+
+  <div class="note-card">
+    <h2>Two views of the same product</h2>
+    <p>This screen map shows <em>where</em> every screen lives in the hierarchy. Its companion, the <a href="user-flows.html">routing board</a>, shows <em>how</em> a record moves through each department — the action on every arrow. Both are traced from the mockup's real navigation.</p>
+    <p>Thumbnails are generated from a handful of reusable wireframe templates; the department stripe and filename on each come from the same <span class="mono">FB_ENTITY_META</span> map the app uses.</p>
+  </div>
+
+</article>
+
+<script>
+  (function () {
+    var rep = function (n, s) { var o = ""; for (var i = 0; i < n; i++) o += s; return o; };
+    var fields = function (n) { return '<div class="wform">' + rep(n, '<div class="wf"><span></span><b></b></div>') + '</div>'; };
+    var rows = function (n, av) { return '<div class="wlist">' + rep(n, '<div class="wrow"><i class="' + (av ? 'av' : '') + '"></i><b></b></div>') + '</div>'; };
+
+    var TPL = {
+      auth:   '<div class="wh"></div><div class="pad"><b class="wbar logo"></b>' + fields(2) + '<div class="wbtn wide"></div></div>',
+      dash:   '<div class="wh"></div><div class="wstats"><i></i><i></i><i></i><i></i></div><div class="wgrid"><i></i><i></i><i></i></div><div class="wlines md"></div>',
+      list:   '<div class="wh"></div>' + rows(4, false),
+      feed:   '<div class="wh"></div>' + rows(4, true),
+      detail: '<div class="wh"></div><div class="wtitle"><b></b><span class="wstamp"></span></div><div class="wlines md"></div><div class="wgrid"><i></i><i></i><i></i></div>',
+      form:   '<div class="wh"></div>' + fields(4) + '<div class="wbtn wide"></div>',
+      doc:    '<div class="wh"></div><div class="wlines sm" style="width:55%;margin:0 auto"></div><div class="wtable"></div><div class="wlines sm" style="width:45%;margin-left:auto"></div>'
+    };
+
+    var nodes = document.querySelectorAll('.m-node');
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      var tpl = TPL[n.getAttribute('data-tpl')] || TPL.detail;
+      n.innerHTML =
+        '<span class="m-lab">' + n.getAttribute('data-label') + '</span>' +
+        '<div class="m-wire">' + tpl + '</div>' +
+        '<span class="m-file">' + (n.getAttribute('data-file') || '') + '</span>';
+    }
+
+    /* ---------- pan + zoom ---------- */
+    var map = document.querySelector('.m-map');
+    var wrap = document.querySelector('.m-zoomwrap');
+    var tree = document.querySelector('.m-tree');
+    var level = document.getElementById('zlevel');
+    var MIN = 0.3, MAX = 1.6, z = 1, baseW = 0, baseH = 0, fitted = false;
+
+    function computeBase() {
+      var t = tree.style.transform;
+      tree.style.transform = 'none'; wrap.style.width = 'auto'; wrap.style.height = 'auto';
+      baseW = tree.offsetWidth; baseH = tree.offsetHeight;
+      tree.style.transform = t;
+    }
+    function render() {
+      z = Math.min(MAX, Math.max(MIN, z));
+      tree.style.transform = 'scale(' + z + ')';
+      wrap.style.width = (baseW * z) + 'px';
+      wrap.style.height = (baseH * z) + 'px';
+      level.textContent = Math.round(z * 100) + '%';
+    }
+    function fit() { computeBase(); z = Math.min(1, Math.max(MIN, (map.clientWidth - 6) / baseW)); fitted = true; render(); }
+    function zoomTo(v) { computeBase(); z = v; fitted = false; render(); }
+
+    document.querySelector('.m-zoombar').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-zoom]'); if (!b) return;
+      var a = b.getAttribute('data-zoom');
+      if (a === 'in') zoomTo(z + 0.15);
+      else if (a === 'out') zoomTo(z - 0.15);
+      else if (a === 'reset') zoomTo(1);
+      else if (a === 'fit') fit();
+    });
+
+    map.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      computeBase();
+      z += (e.deltaY < 0 ? 0.12 : -0.12); fitted = false; render();
+    }, { passive: false });
+
+    /* drag-to-pan (ignore clicks on the filename links / buttons) */
+    var drag = false, sx = 0, sy = 0, sl = 0, st = 0;
+    map.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0 || e.target.closest('a')) return;
+      e.preventDefault();
+      drag = true; sx = e.clientX; sy = e.clientY; sl = map.scrollLeft; st = map.scrollTop;
+      map.setPointerCapture(e.pointerId); map.classList.add('grabbing');
+    });
+    map.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      map.scrollLeft = sl - (e.clientX - sx);
+      map.scrollTop = st - (e.clientY - sy);
+    });
+    function endDrag() { drag = false; map.classList.remove('grabbing'); }
+    map.addEventListener('pointerup', endDrag);
+    map.addEventListener('pointercancel', endDrag);
+
+    window.addEventListener('resize', function () { if (fitted) fit(); });
+
+    /* start fitted to width so the whole map is visible; re-fit once fonts settle */
+    computeBase();
+    if (baseW > map.clientWidth) fit(); else render();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { if (fitted) fit(); else { computeBase(); render(); } });
+    }
+  })();
+</script>
+</body>
+</html>

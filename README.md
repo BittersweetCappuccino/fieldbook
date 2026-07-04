@@ -41,6 +41,7 @@ That's the insight the concept is built around: a DMS replacing a paper system t
 ## Associated work
 
 - **[User Flows for the Shop Floor](https://bittersweetcappuccino.github.io/fieldbook/docs/user-flows.html)** — a routing board that maps every real path through the mockup across all five departments.
+- **[Screen Map](https://bittersweetcappuccino.github.io/fieldbook/docs/user-flows-sitemap.html)** — the same product as a low-fidelity wireframe sitemap: every screen as a thumbnail, in the hierarchy a user descends.
 - **[Pressure Test: Fieldbook's Sync Feed vs. a Real OEM API](https://bittersweetcappuccino.github.io/fieldbook/docs/pressure-test.html)** — an addendum that stress-tests the manufacturer sync feed against John Deere's public developer documentation, and what each constraint changes in the product.
 
 ---
