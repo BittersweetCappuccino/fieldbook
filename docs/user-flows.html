@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Flows — Fieldbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<style>
+  /* ============================================================
+     USER FLOWS — case-study addendum
+     A routing board rendered in Fieldbook's own shop-floor language:
+     paper ground, department wayfinding colors, torn-ticket nodes
+     with a perforated stripe and an ink-stamp terminal. Reuses the
+     shared design tokens, the .doc-head charcoal slab (amber spine),
+     and the Oswald display face. Light-only, like the rest of the app.
+     ============================================================ */
+  body.page-doc { background: var(--paper); }
+  .doc { max-width: 1120px; margin: 0 auto; padding: 0 24px 80px; }
+  .doc-topnav { max-width: 1120px; margin: 0 auto; padding: 20px 24px 0; }
+  .doc-back { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: var(--slate); text-decoration: none; }
+  .doc-back:hover { color: var(--ink); }
+  .doc-back svg { transition: transform 0.12s ease; }
+  .doc-back:hover svg { transform: translateX(-2px); }
+
+  /* header slab — echoes the work-order head: charcoal + amber spine */
+  .doc-head { background: var(--charcoal); color: var(--cream-text); border-radius: 4px; padding: 30px 32px; position: relative; overflow: hidden; margin: 16px 0 26px; }
+  .doc-head::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--amber); }
+  .doc-kicker { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+  .doc-head h1 { font-family: 'Oswald', sans-serif; font-size: 34px; font-weight: 600; line-height: 1.1; letter-spacing: 0.01em; margin: 8px 0 0; }
+  .doc-lede { font-size: 14.5px; line-height: 1.65; color: var(--slate-light); margin-top: 14px; }
+  .doc-lede b { color: var(--cream-text); font-weight: 500; }
+
+  /* ---------- legend + how-to-read key ---------- */
+  .flow-key { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 22px 0 4px; }
+  .flow-key .kt { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate); }
+  .chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink); text-decoration: none; transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease; }
+  a.chip:hover { border-color: var(--slate); box-shadow: 0 2px 7px rgba(31,38,35,0.08); transform: translateY(-1px); }
+  .chip i { width: 22px; height: 8px; border-radius: 2px; display: inline-block; }
+  .howto { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--paper-line); font-size: 12px; color: var(--slate); align-items: center; }
+  .howto .g { display: inline-flex; align-items: center; gap: 8px; }
+  .sa { width: 34px; height: 2px; background: var(--slate-light); position: relative; margin-right: 6px; }
+  .sa.dash { background: none; background-image: repeating-linear-gradient(to right, var(--slate-light) 0, var(--slate-light) 4px, transparent 4px, transparent 8px); }
+  .sa::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 7px solid var(--slate-light); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .howto .fx { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--slate-light); }
+  .howto .st { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 9px; color: var(--slate); border: 1.5px solid var(--slate); border-radius: 3px; padding: 0 4px; transform: rotate(-4deg); display: inline-block; }
+
+  /* ---------- flow section ---------- */
+  .flow { margin-top: 42px; scroll-margin-top: 20px; }
+  .flow-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--paper-line); }
+  .flow-head .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--lane); align-self: center; flex: 0 0 auto; box-shadow: 0 0 0 3px var(--lane-halo); }
+  .flow-head h2 { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; font-size: 19px; margin: 0; color: var(--lane-t); }
+  .flow-head .goal { color: var(--slate); font-size: 13px; }
+  .flow-head .dept-tag { margin-left: auto; font-family: 'Oswald', sans-serif; font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--slate-light); }
+
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 18px; padding: 26px 16px 14px; background: var(--paper-2); border: 1px solid var(--paper-line); border-radius: 4px; background-image: linear-gradient(var(--grid-c) 1px, transparent 1px), linear-gradient(90deg, var(--grid-c) 1px, transparent 1px); background-size: 24px 24px; }
+  .track { display: flex; align-items: center; gap: 0; width: max-content; min-width: 100%; }
+
+  /* origin pill — the department flows descend from the dashboard */
+  .origin { flex: 0 0 auto; position: relative; display: flex; align-items: center; padding-right: 2px; }
+  .origin .from { position: absolute; left: 2px; bottom: 100%; margin-bottom: 6px; font-family: 'Oswald', sans-serif; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate-light); }
+  .origin .pill { border: 1px dashed var(--paper-line); border-radius: 8px; padding: 8px 12px; color: var(--slate); font-size: 12px; background: #fff; }
+
+  /* ---------- node ( torn ticket ) ---------- */
+  .node { flex: 0 0 auto; width: 188px; position: relative; background: #fff; border: 1px solid var(--paper-line); border-left: 5px solid var(--lane); border-radius: 5px; box-shadow: 0 1px 2px rgba(31,38,35,0.08), 0 6px 16px rgba(31,38,35,0.05); padding: 13px 14px 11px 16px; }
+  .node::before { content: ""; position: absolute; left: 2px; top: 8px; bottom: 8px; width: 3px; background-image: radial-gradient(circle, var(--paper-line) 1.1px, transparent 1.3px); background-size: 3px 6px; }
+  .node .num { position: absolute; top: -9px; left: 12px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 4px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; box-shadow: 0 1px 3px rgba(31,38,35,0.2); }
+  .node .nm { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; font-weight: 600; font-size: 15px; line-height: 1.12; margin: 4px 0 5px; color: var(--ink); }
+  .node .role { font-size: 11.5px; color: var(--slate); line-height: 1.34; min-height: 30px; }
+  .node .file { margin-top: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--slate-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* aux action pills — mirror the record's Actions menu */
+  .aux { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 9px; padding-top: 9px; border-top: 1px dotted var(--paper-line); }
+  .aux span { font-size: 10px; color: var(--slate); background: var(--paper-2); border: 1px solid var(--paper-line); border-radius: 20px; padding: 1.5px 7px; white-space: nowrap; }
+
+  /* ink-stamp terminal badge — floated so the title wraps beside it, never under */
+  .stamp { float: right; margin: 2px 0 3px 8px; transform: rotate(-4deg); transform-origin: center; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; font-size: 9.5px; color: var(--lane-t); border: 1.5px solid var(--lane-t); border-radius: 3px; padding: 1px 5px; opacity: 0.9; white-space: nowrap; }
+
+  /* ---------- connectors ---------- */
+  /* connector — a 2px line that sizes to its label so the arrow grows with the text */
+  .link { flex: 0 0 auto; align-self: center; display: flex; align-items: center; justify-content: center; width: max-content; min-width: 72px; height: 2px; background: var(--slate-light); position: relative; margin: 0 1px; padding: 0 20px 0 10px; }
+  .link.opt { background: none; background-image: repeating-linear-gradient(to right, var(--slate-light) 0, var(--slate-light) 4px, transparent 4px, transparent 8px); }
+  .link.loop { min-width: 56px; background: none; background-image: repeating-linear-gradient(to right, var(--slate-light) 0, var(--slate-light) 2px, transparent 2px, transparent 6px); }
+  .link::after { content: ""; position: absolute; right: -1px; top: 50%; transform: translateY(-50%); border-left: 7px solid var(--slate-light); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .link .lbl { background: var(--paper-2); color: var(--slate); font-size: 10px; letter-spacing: 0.02em; white-space: nowrap; padding: 2px 7px; border: 1px solid var(--paper-line); border-radius: 20px; line-height: 1.2; }
+  .link.opt .lbl { font-style: italic; color: var(--slate-light); }
+  .link.loop .lbl { font-style: italic; }
+
+  .fnote { font-size: 11.5px; color: var(--slate-light); margin-top: 6px; padding-left: 2px; }
+  .fnote code { font-family: 'IBM Plex Mono', monospace; color: var(--slate); font-size: 11px; background: none; border: none; padding: 0; }
+
+  /* method note — tinted end card, like the shop-floor status panels */
+  .note-card { background: rgba(74,108,122,0.06); border: 1px solid var(--paper-line); border-left: 3px solid var(--steel-blue); border-radius: 3px; padding: 18px 20px; margin-top: 44px; }
+  .note-card h2 { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 10px; }
+  .note-card p { font-size: 13px; line-height: 1.6; color: var(--ink); margin: 0; }
+  .note-card p + p { margin-top: 10px; }
+  .note-card .mono { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--steel-blue-deep); }
+  .note-card a { color: var(--steel-blue-deep); border-bottom: 1px solid var(--paper-line); text-decoration: none; }
+  .note-card a:hover { border-bottom-color: var(--steel-blue); }
+
+  @media (max-width: 600px) {
+    .doc, .doc-topnav { padding-left: 16px; padding-right: 16px; }
+    .doc-head { padding: 24px 22px; }
+    .doc-head h1 { font-size: 26px; }
+    .node { width: 168px; }
+    .link { min-width: 56px; }
+    .flow-head .dept-tag { margin-left: 0; flex-basis: 100%; }
+  }
+</style>
+</head>
+<body class="page-doc">
+
+<nav class="doc-topnav">
+  <a class="doc-back" href="../index.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back to Today's Board
+  </a>
+</nav>
+
+<article class="doc" style="--grid-c: rgba(33,29,23,0.05);">
+
+  <header class="doc-head">
+    <div class="doc-kicker">Case Study · Flow Map</div>
+    <h1>User Flows for the Shop Floor</h1>
+    <p class="doc-lede">Fieldbook routes a piece of equipment through five departments the way a dealership once routed a <b>paper work-order ticket</b>. Every flow below is a real path through the mockup — nodes are screens that exist, arrows are the action that advances the record, and each lane's color is the department's wayfinding color, exactly as it appears in the app.</p>
+  </header>
+
+  <div class="flow-key">
+    <span class="kt">Departments</span>
+    <a class="chip" href="#flow-access"><i style="background:var(--slate)"></i>Access&nbsp;&amp;&nbsp;customers</a>
+    <a class="chip" href="#flow-service"><i style="background:var(--amber)"></i>Service</a>
+    <a class="chip" href="#flow-parts"><i style="background:var(--field-green)"></i>Parts</a>
+    <a class="chip" href="#flow-rentals"><i style="background:var(--steel-blue)"></i>Rentals</a>
+    <a class="chip" href="#flow-sales"><i style="background:var(--clay)"></i>Sales</a>
+    <a class="chip" href="#flow-oem"><i style="background:var(--amber-deep)"></i>Manufacturer&nbsp;/&nbsp;warranty</a>
+  </div>
+  <div class="howto">
+    <span class="g"><span class="sa"></span>advances the record</span>
+    <span class="g"><span class="sa dash"></span>optional / conditional detour</span>
+    <span class="g"><span class="fx">page.html</span> — the actual screen file</span>
+    <span class="g"><span class="st">Invoiced</span> ink-stamp = terminal state</span>
+  </div>
+
+  <!-- ============ A. ACCESS & WORKSPACE ============ -->
+  <section id="flow-access" class="flow" style="--lane:var(--slate); --lane-t:#585345; --lane-halo:rgba(111,106,93,0.22);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Access &amp; workspace</h2>
+      <span class="goal">Sign in, land on the board that shows what's blocking work, manage the account.</span>
+      <span class="dept-tag">Entry point</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Sign in</div>
+        <div class="role">Operator authentication for the dealership workspace.</div>
+        <div class="file">login.html</div>
+      </div>
+      <div class="link"><span class="lbl">authenticate</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Dashboard</div>
+        <div class="role">The four blockers — open work orders, backordered parts, overdue rentals, pipeline value — over five module boards.</div>
+        <div class="aux"><span>Bay board</span><span>Parts alerts</span><span>Fleet</span><span>Pipeline</span><span>OEM sync</span><span>Reporting</span></div>
+        <div class="file">index.html</div>
+      </div>
+      <div class="link"><span class="lbl">account&nbsp;▾</span></div>
+      <div class="node">
+        <span class="num">3</span>
+        <div class="nm">Your profile</div>
+        <div class="role">Operator identity, role, and preferences.</div>
+        <div class="file">profile.html</div>
+      </div>
+      <div class="link"><span class="lbl">settings</span></div>
+      <div class="node">
+        <span class="num">4</span>
+        <div class="nm">Account settings</div>
+        <div class="role">Workspace and account configuration.</div>
+        <div class="file">settings.html</div>
+      </div>
+      <div class="link loop"><span class="lbl">sign out</span></div>
+      <div class="node">
+        <span class="stamp">Signed out</span>
+        <div class="nm">Back to sign in</div>
+        <div class="role">Confirmation modal, then returned to the login screen.</div>
+        <div class="file">→ login.html</div>
+      </div>
+    </div></div>
+    <p class="fnote">The location switcher (Fargo / Bismarck / Grand&nbsp;Forks / Minot) lives in the topbar on every screen and persists per session.</p>
+  </section>
+
+  <!-- ============ B. SERVICE ============ -->
+  <section id="flow-service" class="flow" style="--lane:var(--amber); --lane-t:var(--amber-deep); --lane-halo:rgba(226,147,47,0.24);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Service — work order to paid invoice</h2>
+      <span class="goal">The signature lifecycle: a ticket moves from the bay board to a generated invoice.</span>
+      <span class="dept-tag">Dashboard → Service</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="origin"><span class="from">From</span><span class="pill">Dashboard · bay board</span></div>
+      <div class="link"></div>
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Bay board</div>
+        <div class="role">All seven bays with color-coded, stamped ticket cards.</div>
+        <div class="file">service.html</div>
+      </div>
+      <div class="link"><span class="lbl">open ticket</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Work order</div>
+        <div class="role">Torn-ticket detail — status, labor &amp; parts lines, history.</div>
+        <div class="aux"><span>Add labor / parts</span><span>Status</span><span>Edit</span><span>Print</span></div>
+        <div class="file">work-order.html</div>
+      </div>
+      <div class="link"><span class="lbl">assign</span></div>
+      <div class="node">
+        <span class="num">3</span>
+        <div class="nm">Assign technician</div>
+        <div class="role">Tech, bay, priority, and scheduled start.</div>
+        <div class="file">assign.html</div>
+      </div>
+      <div class="link"><span class="lbl">start job</span></div>
+      <div class="node">
+        <span class="num">4</span>
+        <div class="nm">Active bay</div>
+        <div class="role">The job in progress on the shop floor.</div>
+        <div class="file">bay.html</div>
+      </div>
+      <div class="link opt"><span class="lbl">if backordered</span></div>
+      <div class="node" style="--lane:var(--field-green);">
+        <span class="num">4a</span>
+        <div class="nm">Update parts&nbsp;ETA</div>
+        <div class="role">Revise the backordered-part arrival while the job waits.</div>
+        <div class="file">parts-eta.html</div>
+      </div>
+      <div class="link opt"><span class="lbl">parts in</span></div>
+      <div class="node">
+        <span class="num">5</span>
+        <div class="nm">QC checklist</div>
+        <div class="role">Road test, fluids, torque, codes cleared — mark ready for QC.</div>
+        <div class="file">qc.html</div>
+      </div>
+      <div class="link"><span class="lbl">pass</span></div>
+      <div class="node">
+        <span class="num">6</span>
+        <div class="nm">Generate invoice</div>
+        <div class="role">Labor + parts + tax rolled into an invoice preview.</div>
+        <div class="file">invoice.html</div>
+      </div>
+      <div class="link"><span class="lbl">send</span></div>
+      <div class="node">
+        <span class="stamp">Invoiced</span>
+        <span class="num">7</span>
+        <div class="nm">Email customer</div>
+        <div class="role">Invoice sent; ticket closes.</div>
+        <div class="file">email.html</div>
+      </div>
+    </div></div>
+    <p class="fnote">Line edits deep-link to <code>line-item.html</code> (labor / parts / charge); status changes to <code>status.html</code>; cancel / void route through <code>confirm.html</code>.</p>
+  </section>
+
+  <!-- ============ C. PARTS ============ -->
+  <section id="flow-parts" class="flow" style="--lane:var(--field-green); --lane-t:var(--field-green-deep); --lane-halo:rgba(63,107,79,0.24);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Parts — reorder &amp; receive</h2>
+      <span class="goal">Clear a backordered-part alert: order it, track the PO, receive it into stock.</span>
+      <span class="dept-tag">Dashboard → Parts</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="origin"><span class="from">From</span><span class="pill">Dashboard · parts alerts</span></div>
+      <div class="link"></div>
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Reorder queue</div>
+        <div class="role">Low-stock and backordered parts, with reorder / track actions.</div>
+        <div class="file">parts.html</div>
+      </div>
+      <div class="link"><span class="lbl">open part</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Part</div>
+        <div class="role">On-hand count, bin, supplier, and movement history.</div>
+        <div class="aux"><span>Adjust stock</span><span>Transfer</span><span>Order more</span><span>Edit</span></div>
+        <div class="file">part.html</div>
+      </div>
+      <div class="link opt"><span class="lbl">cycle count</span></div>
+      <div class="node" style="--lane:var(--steel-blue);">
+        <span class="num">2a</span>
+        <div class="nm">Adjust / transfer stock</div>
+        <div class="role">Correct on-hand, or move stock between store locations.</div>
+        <div class="file">adjust-stock · transfer-stock</div>
+      </div>
+      <div class="link opt"><span class="lbl">back to part</span></div>
+      <div class="node">
+        <span class="num">3</span>
+        <div class="nm">New purchase order</div>
+        <div class="role">Reorder — the part is prefilled onto a fresh PO.</div>
+        <div class="file">new.html?type=po</div>
+      </div>
+      <div class="link"><span class="lbl">submit</span></div>
+      <div class="node">
+        <span class="num">4</span>
+        <div class="nm">Purchase order</div>
+        <div class="role">Track the PO against the manufacturer's shipment ETA.</div>
+        <div class="aux"><span>Add line</span><span>Status</span><span>Print</span><span>Email vendor</span></div>
+        <div class="file">po.html</div>
+      </div>
+      <div class="link"><span class="lbl">arrives</span></div>
+      <div class="node">
+        <span class="stamp">Received</span>
+        <span class="num">5</span>
+        <div class="nm">Receive against PO</div>
+        <div class="role">Count, condition, bin — stock is updated.</div>
+        <div class="file">receive.html</div>
+      </div>
+    </div></div>
+    <p class="fnote">A dashboard "Reorder" button jumps straight to <code>new.html?type=po&amp;part=…</code>; a "Track" button lands on the existing <code>po.html</code>.</p>
+  </section>
+
+  <!-- ============ D. RENTALS ============ -->
+  <section id="flow-rentals" class="flow" style="--lane:var(--steel-blue); --lane-t:var(--steel-blue-deep); --lane-halo:rgba(74,108,122,0.24);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Rentals — fleet &amp; return</h2>
+      <span class="goal">Manage an out-on-rent unit through extension and return inspection.</span>
+      <span class="dept-tag">Dashboard → Rentals</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="origin"><span class="from">From</span><span class="pill">Dashboard · rental fleet</span></div>
+      <div class="link"></div>
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Rental fleet</div>
+        <div class="role">Units on rent, due-back dates, and overdue stamps.</div>
+        <div class="file">rentals.html</div>
+      </div>
+      <div class="link"><span class="lbl">open</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Rental</div>
+        <div class="role">Agreement, unit, term, meter, and charges.</div>
+        <div class="aux"><span>Add charge</span><span>Status</span><span>Edit</span><span>Print</span></div>
+        <div class="file">rental.html</div>
+      </div>
+      <div class="link opt"><span class="lbl">if extended</span></div>
+      <div class="node" style="--lane:var(--amber);">
+        <span class="num">2a</span>
+        <div class="nm">Extend rental</div>
+        <div class="role">New due-back date, term, and added charges.</div>
+        <div class="file">extend.html</div>
+      </div>
+      <div class="link opt"><span class="lbl">on return</span></div>
+      <div class="node">
+        <span class="stamp">Returned</span>
+        <span class="num">3</span>
+        <div class="nm">Return inspection</div>
+        <div class="role">Check in — meter, fuel, condition, damage charges.</div>
+        <div class="file">checkin.html</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ============ E. SALES ============ -->
+  <section id="flow-sales" class="flow" style="--lane:var(--clay); --lane-t:var(--clay-deep); --lane-halo:rgba(180,80,46,0.24);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Sales — deal pipeline</h2>
+      <span class="goal">Move a deal down the pipeline to a signed, quoted, won sale.</span>
+      <span class="dept-tag">Dashboard → Sales</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="origin"><span class="from">From</span><span class="pill">Dashboard · pipeline</span></div>
+      <div class="link"></div>
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Pipeline board</div>
+        <div class="role">Deals by stage with weighted pipeline value.</div>
+        <div class="file">sales.html</div>
+      </div>
+      <div class="link"><span class="lbl">open</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Deal</div>
+        <div class="role">Customer, unit, trade-in, financing, and quote lines.</div>
+        <div class="aux"><span>Add line item</span><span>Advance stage</span><span>Edit</span></div>
+        <div class="file">deal.html</div>
+      </div>
+      <div class="link"><span class="lbl">advance</span></div>
+      <div class="node">
+        <span class="num">3</span>
+        <div class="nm">Update stage</div>
+        <div class="role">Push the deal to the next pipeline stage.</div>
+        <div class="file">status.html</div>
+      </div>
+      <div class="link"><span class="lbl">quote</span></div>
+      <div class="node">
+        <span class="num">4</span>
+        <div class="nm">Add line items</div>
+        <div class="role">Unit, options, and trade toward a quote.</div>
+        <div class="file">line-item.html</div>
+      </div>
+      <div class="link"><span class="lbl">send quote</span></div>
+      <div class="node">
+        <span class="stamp">Won</span>
+        <span class="num">5</span>
+        <div class="nm">Email to customer</div>
+        <div class="role">Quote out the door; deal advances to close.</div>
+        <div class="file">email.html</div>
+      </div>
+    </div></div>
+    <p class="fnote">New deals are also started from a customer record — <code>new.html?type=deal</code> — see the customers flow below.</p>
+  </section>
+
+  <!-- ============ F. MANUFACTURER / WARRANTY ============ -->
+  <section id="flow-oem" class="flow" style="--lane:var(--amber-deep); --lane-t:#8A5410; --lane-halo:rgba(185,112,26,0.24);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Manufacturer sync &amp; warranty</h2>
+      <span class="goal">The OEM relationship: a sync-feed event becomes a warranty claim filed with the manufacturer.</span>
+      <span class="dept-tag">Dashboard → OEM feed</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="origin"><span class="from">From</span><span class="pill">Dashboard · sync feed</span></div>
+      <div class="link"></div>
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Integration log</div>
+        <div class="role">Transactional OEM events — credits posted, ETAs, flagged claims.</div>
+        <div class="file">manufacturers.html</div>
+      </div>
+      <div class="link"><span class="lbl">open claim</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Warranty claim</div>
+        <div class="role">Claim detail — labor, parts, amount, and OEM status.</div>
+        <div class="aux"><span>Add labor / parts</span><span>Status</span><span>Edit</span></div>
+        <div class="file">warranty.html</div>
+      </div>
+      <div class="link"><span class="lbl">submit</span></div>
+      <div class="node">
+        <span class="stamp">Credit&nbsp;posted</span>
+        <span class="num">3</span>
+        <div class="nm">Submit to manufacturer</div>
+        <div class="role">Dealer portal / EDI submission; awaits OEM credit.</div>
+        <div class="file">claim-submit.html</div>
+      </div>
+    </div></div>
+    <p class="fnote">A stalled sync here directly blocks Service — a flagged claim can hold a technician from closing a job, which is why the feed is transactional, not a notification dump.</p>
+  </section>
+
+  <!-- ============ G. CUSTOMERS ============ -->
+  <section class="flow" style="--lane:var(--slate); --lane-t:#585345; --lane-halo:rgba(111,106,93,0.22);">
+    <div class="flow-head">
+      <span class="dot"></span>
+      <h2>Customers — the cross-cutting hub</h2>
+      <span class="goal">One customer touches every department; their record is where new work starts.</span>
+      <span class="dept-tag">Feeds all departments</span>
+    </div>
+    <div class="scroll"><div class="track">
+      <div class="node">
+        <span class="num">1</span>
+        <div class="nm">Customers</div>
+        <div class="role">Accounts across service, parts, rentals, and sales.</div>
+        <div class="file">customers.html</div>
+      </div>
+      <div class="link"><span class="lbl">open</span></div>
+      <div class="node">
+        <span class="num">2</span>
+        <div class="nm">Customer</div>
+        <div class="role">Contact, equipment owned, and activity across departments.</div>
+        <div class="aux"><span>Print statement</span><span>Email</span><span>Edit</span></div>
+        <div class="file">customer.html</div>
+      </div>
+      <div class="link"><span class="lbl">start work</span></div>
+      <div class="node" style="--lane:var(--amber); --lane-t:var(--amber-deep);">
+        <span class="stamp">Service</span>
+        <div class="nm">New work order</div>
+        <div class="role">Opens a Service ticket for this customer.</div>
+        <div class="file">new.html?type=work-order</div>
+      </div>
+      <div class="link opt"><span class="lbl">or</span></div>
+      <div class="node" style="--lane:var(--steel-blue); --lane-t:var(--steel-blue-deep);">
+        <span class="stamp">Rentals</span>
+        <div class="nm">New rental</div>
+        <div class="role">Starts a Rentals agreement.</div>
+        <div class="file">new.html?type=rental</div>
+      </div>
+      <div class="link opt"><span class="lbl">or</span></div>
+      <div class="node" style="--lane:var(--clay); --lane-t:var(--clay-deep);">
+        <span class="stamp">Sales</span>
+        <div class="nm">New deal</div>
+        <div class="role">Enters the Sales pipeline.</div>
+        <div class="file">new.html?type=deal</div>
+      </div>
+    </div></div>
+  </section>
+
+  <div class="note-card">
+    <h2>How this map was drawn</h2>
+    <p>Every node and arrow is traced from the mockup itself — the action router in <span class="mono">js/sidebar.js</span>, the workflow screens in <span class="mono">js/workflow.js</span>, and the shared entity metadata that maps each record to its department, detail page, and Actions menu. Palette and type reuse <span class="mono">css/styles.css</span>, so the flow board reads in the same shop-floor language as the app.</p>
+    <p>Companion to the <a href="pressure-test.html">Pressure Test</a> addendum. Back to the <a href="../index.html">interactive mockup</a>.</p>
+  </div>
+
+</article>
+</body>
+</html>
