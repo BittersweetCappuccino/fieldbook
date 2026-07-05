@@ -54,6 +54,7 @@ The bay view is also self-sufficient — the technician's own job queue lives in
 - **[User Flows for the Shop Floor](https://bittersweetcappuccino.github.io/fieldbook/docs/user-flows.html)** — a routing board that maps every real path through the mockup across all five departments.
 - **[Screen Map](https://bittersweetcappuccino.github.io/fieldbook/docs/user-flows-sitemap.html)** — the same product as a low-fidelity wireframe sitemap: every screen as a thumbnail, in the hierarchy a user descends.
 - **[Pressure Test: Fieldbook's Sync Feed vs. a Real OEM API](https://bittersweetcappuccino.github.io/fieldbook/docs/pressure-test.html)** — an addendum that stress-tests the manufacturer sync feed against John Deere's public developer documentation, and what each constraint changes in the product.
+- **[Product Backlog](docs/backlog.md)** — the concept taken to delivery: the productionization scoped as a technical PM would hand it to engineers — 10 epics broken into 26 features and 66 sprint-sized stories, each with Given/When/Then acceptance criteria, scope boundaries, and technical notes.
 
 ---
 

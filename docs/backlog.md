@@ -2,7 +2,7 @@
 
 **Product:** Fieldbook — Dealer Management System (DMS) for agriculture, construction, and turf equipment dealerships.
 **Scope of this backlog:** Productionizing the concept from scratch as a full-stack application. The existing HTML/CSS/JS mockup is the **reference design**, not the codebase — every screen it shows becomes real, backend-backed functionality.
-**Author:** Product (technical PM)
+**Author:** Daniela Captari, Product (technical PM)
 **Status:** Draft for team refinement
 
 ---
